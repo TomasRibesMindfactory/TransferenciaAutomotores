@@ -5,6 +5,8 @@ import { Automotor } from '../entities/automotor.entity';
 import { SujetoPasivo } from '../entities/sujeto-pasivo.entity';
 import { ObjetoValorPredeterminado } from '../entities/objeto-valor-predeterminado.entity';
 import { VinculoSujetoObjeto } from '../entities/vinculo-sujeto-objeto.entity';
+import { FormSeedService } from '../../../forms/infrastructure/services/form-seed.service';
+import { FormFieldSeedService } from '../../../forms/infrastructure/services/form-field-seed.service';
 import {
   seedAutomotores,
   seedSujetosPasivos,
@@ -23,10 +25,15 @@ export class SeedService implements OnModuleInit {
     private readonly ovpRepository: Repository<ObjetoValorPredeterminado>,
     @InjectRepository(VinculoSujetoObjeto)
     private readonly vinculoRepository: Repository<VinculoSujetoObjeto>,
+    private readonly formSeedService: FormSeedService,
+    private readonly formFieldSeedService: FormFieldSeedService,
   ) {}
 
   async onModuleInit() {
     await this.seedDatabase();
+    // Poblar formularios dinámicos después de los datos base
+    await this.formSeedService.seedForms();
+    await this.formFieldSeedService.seedFormFields();
   }
 
   private async seedDatabase() {

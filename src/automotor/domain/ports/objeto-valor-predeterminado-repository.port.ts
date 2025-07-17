@@ -5,4 +5,7 @@ export abstract class ObjetoValorPredeterminadoRepositoryPort {
     automotorId: number,
   ): Promise<ObjetoValorPredeterminado[]>;
   abstract findById(id: number): Promise<ObjetoValorPredeterminado | null>;
+  abstract create(
+    objetoValor: Partial<ObjetoValorPredeterminado>,
+  ): Promise<ObjetoValorPredeterminado>;
 }

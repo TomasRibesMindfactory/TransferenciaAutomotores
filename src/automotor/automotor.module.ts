@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AutomotorController } from './infrastructure/controllers/automotor.controller';
 import { AutomotorService } from './application/services/automotor.service';
+import { FormsModule } from '../forms/forms.module';
 
 // Interfaces (puertos)
 import { AutomotorRepositoryPort } from './domain/ports/automotor-repository.port';
@@ -30,6 +31,7 @@ import { ObjetoValorPredeterminado } from './infrastructure/entities/objeto-valo
       VinculoSujetoObjeto,
       ObjetoValorPredeterminado,
     ]),
+    FormsModule,
   ],
   controllers: [AutomotorController],
   providers: [

@@ -8,6 +8,7 @@ import { SujetoPasivoRepositoryPort } from '../../domain/ports/sujeto-pasivo-rep
 import { VinculoSujetoObjetoRepositoryPort } from '../../domain/ports/vinculo-sujeto-objeto-repository.port';
 import { ObjetoValorPredeterminadoRepositoryPort } from '../../domain/ports/objeto-valor-predeterminado-repository.port';
 import { TransferenciaAutomotorDto } from '../../infrastructure/dto/transferencia-automotor.dto';
+import { AltaAutomotorDto } from '../../infrastructure/dto/alta-automotor.dto';
 
 @Injectable()
 export class AutomotorService {
@@ -131,5 +132,81 @@ export class AutomotorService {
         responsable: nuevoVinculo.responsable === 'S' ? 'Sí' : 'No',
       },
     };
+  }
+
+  /**
+   * Registra un alta de automotor (nuevo vehículo)
+   */
+  async registrarAlta(altaDto: AltaAutomotorDto) {
+    try {
+      // Buscar el propietario inicial
+      const propietario = await this.sujetoPasivoRepository.findByCuit(
+        altaDto.propietario.cuit,
+      );
+
+      if (!propietario) {
+        throw new NotFoundException(
+          `Propietario con CUIT ${altaDto.propietario.cuit} no encontrado`,
+        );
+      }
+
+      // Crear el automotor si no existe
+      let automotor = await this.automotorRepository.findByDominio(
+        altaDto.ovpId,
+      );
+
+      if (!automotor) {
+        // Crear nuevo automotor
+        automotor = await this.automotorRepository.create({
+          modelo: altaDto.vehiculo?.modelo || 'Sin especificar',
+          codigoAlta: Math.floor(Date.now() / 1000), // Timestamp en segundos
+          registroId:
+            parseInt(altaDto.ovpId.replace(/\D/g, ''), 10) ||
+            Math.floor(Math.random() * 1000000),
+          dominio: altaDto.ovpId,
+          marca: altaDto.vehiculo?.marca || 'Sin especificar',
+          fechaAlta: new Date(),
+        });
+      }
+
+      // Crear el objeto valor predeterminado
+      const objetoValor = await this.ovpRepository.create({
+        automotorId: automotor.id,
+        fechaVigencia: new Date(),
+        valor: altaDto.vehiculo?.valor || 0,
+      });
+
+      // Crear vínculo inicial con el propietario
+      const vinculoInicial = await this.vinculoRepository.create({
+        sujetoPasivoId: propietario.id,
+        objetoValorPredeterminadoId: objetoValor.id,
+        fechaInicio: new Date(),
+        fechaHasta: null,
+        porcentaje: altaDto.propietario.porcentajePropiedad || 100,
+        responsable: altaDto.propietario.esResponsable ? 'S' : 'N',
+      });
+
+      return {
+        mensaje: 'Automotor registrado correctamente.',
+        automotor: {
+          id: automotor.id,
+          patente: automotor.dominio,
+          propietario: {
+            cuit: propietario.cuit,
+            razonSocial: propietario.razonSocial,
+          },
+          fechaAlta: automotor.fechaAlta,
+          porcentaje: vinculoInicial.porcentaje,
+          responsable: vinculoInicial.responsable === 'S' ? 'Sí' : 'No',
+        },
+      };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new BadRequestException(
+        `Error al registrar alta de automotor: ${error.message}`,
+      );
+    }
   }
 }

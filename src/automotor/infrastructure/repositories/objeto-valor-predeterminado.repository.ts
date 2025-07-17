@@ -28,4 +28,11 @@ export class ObjetoValorPredeterminadoRepository
       relations: ['automotor'],
     });
   }
+
+  async create(
+    objetoValor: Partial<ObjetoValorPredeterminado>,
+  ): Promise<ObjetoValorPredeterminado> {
+    const newObjetoValor = this.ovpRepository.create(objetoValor);
+    return this.ovpRepository.save(newObjetoValor);
+  }
 }

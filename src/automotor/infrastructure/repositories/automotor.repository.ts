@@ -27,4 +27,9 @@ export class AutomotorRepository implements AutomotorRepositoryPort {
       relations: ['objetosValorPredeterminado'],
     });
   }
+
+  async create(automotor: Partial<Automotor>): Promise<Automotor> {
+    const newAutomotor = this.automotorRepository.create(automotor);
+    return this.automotorRepository.save(newAutomotor);
+  }
 }

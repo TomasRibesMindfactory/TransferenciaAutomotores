@@ -2,10 +2,14 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AutomotorModule } from './automotor/automotor.module';
+import { FormsModule } from './forms/forms.module';
 import { Automotor } from './automotor/infrastructure/entities/automotor.entity';
 import { SujetoPasivo } from './automotor/infrastructure/entities/sujeto-pasivo.entity';
 import { VinculoSujetoObjeto } from './automotor/infrastructure/entities/vinculo-sujeto-objeto.entity';
 import { ObjetoValorPredeterminado } from './automotor/infrastructure/entities/objeto-valor-predeterminado.entity';
+import { Form } from './forms/infrastructure/entities/form.entity';
+import { FormField } from './forms/infrastructure/entities/form-field.entity';
+import { FormSubmission } from './forms/infrastructure/entities/form-submission.entity';
 
 @Module({
   imports: [
@@ -27,6 +31,9 @@ import { ObjetoValorPredeterminado } from './automotor/infrastructure/entities/o
           SujetoPasivo,
           VinculoSujetoObjeto,
           ObjetoValorPredeterminado,
+          Form,
+          FormField,
+          FormSubmission,
         ],
         synchronize: true,
         extra: {
@@ -35,6 +42,7 @@ import { ObjetoValorPredeterminado } from './automotor/infrastructure/entities/o
       }),
     }),
     AutomotorModule,
+    FormsModule,
   ],
 })
 export class AppModule {}

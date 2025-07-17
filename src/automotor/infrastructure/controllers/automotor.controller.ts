@@ -10,6 +10,7 @@ import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { AutomotorService } from '../../application/services/automotor.service';
 import { ConsultarAutomotorDto } from '../dto/consultar-automotor.dto';
 import { TransferenciaAutomotorDto } from '../dto/transferencia-automotor.dto';
+import { AltaAutomotorDto } from '../dto/alta-automotor.dto';
 
 @ApiTags('automotor')
 @Controller('automotor')
@@ -126,5 +127,39 @@ export class AutomotorController {
       ovpId,
       transferenciaDto,
     );
+  }
+
+  @Post('alta')
+  @ApiOperation({ summary: 'Registrar alta de nuevo automotor' })
+  @ApiResponse({
+    status: 201,
+    description: 'Automotor registrado exitosamente',
+    schema: {
+      type: 'object',
+      properties: {
+        mensaje: {
+          type: 'string',
+          example: 'Automotor registrado correctamente.',
+        },
+        automotor: {
+          type: 'object',
+          properties: {
+            id: { type: 'number', example: 1 },
+            patente: { type: 'string', example: 'AA123BB' },
+            propietario: {
+              type: 'object',
+              properties: {
+                cuit: { type: 'string', example: '20-12345678-9' },
+                razonSocial: { type: 'string', example: 'Juan Pérez' },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 400, description: 'Datos de alta inválidos' })
+  async registrarAlta(@Body() altaDto: AltaAutomotorDto) {
+    return this.automotorService.registrarAlta(altaDto);
   }
 }
