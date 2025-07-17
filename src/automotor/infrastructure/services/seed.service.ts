@@ -45,23 +45,32 @@ export class SeedService implements OnModuleInit {
       console.log(`✅ ${automotores.length} automotores insertados`);
 
       // Insertar sujetos pasivos
-      const sujetosPasivos = await this.sujetoPasivoRepository.save(seedSujetosPasivos);
+      const sujetosPasivos =
+        await this.sujetoPasivoRepository.save(seedSujetosPasivos);
       console.log(`✅ ${sujetosPasivos.length} sujetos pasivos insertados`);
 
       // Insertar objetos valor predeterminado
-      const objetosValor = await this.ovpRepository.save(seedObjetosValorPredeterminado);
-      console.log(`✅ ${objetosValor.length} objetos valor predeterminado insertados`);
+      const objetosValor = await this.ovpRepository.save(
+        seedObjetosValorPredeterminado,
+      );
+      console.log(
+        `✅ ${objetosValor.length} objetos valor predeterminado insertados`,
+      );
 
       // Insertar vínculos sujeto objeto
-      const vinculos = await this.vinculoRepository.save(seedVinculosSujetoObjeto);
+      const vinculos = await this.vinculoRepository.save(
+        seedVinculosSujetoObjeto,
+      );
       console.log(`✅ ${vinculos.length} vínculos sujeto objeto insertados`);
 
       console.log('🎉 Base de datos poblada exitosamente!');
       console.log('📋 Datos de ejemplo disponibles:');
       console.log('   - Automotores: ABC123, XYZ789, DEF456');
-      console.log('   - CUITs: 20-12345678-9, 20-87654321-0, 20-11111111-1, 20-22222222-2');
+      console.log(
+        '   - CUITs: 20-12345678-9, 20-87654321-0, 20-11111111-1, 20-22222222-2',
+      );
     } catch (error) {
       console.error('❌ Error al poblar la base de datos:', error);
     }
   }
-} 
+}

@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany,
+  JoinColumn,
+} from 'typeorm';
 import { Automotor } from './automotor.entity';
 import { VinculoSujetoObjeto } from './vinculo-sujeto-objeto.entity';
 
@@ -16,10 +23,13 @@ export class ObjetoValorPredeterminado {
   @Column({ name: 'OVP_VALOR', type: 'decimal', precision: 15, scale: 2 })
   valor: number;
 
-  @ManyToOne(() => Automotor, automotor => automotor.objetosValorPredeterminado)
+  @ManyToOne(
+    () => Automotor,
+    (automotor) => automotor.objetosValorPredeterminado,
+  )
   @JoinColumn({ name: 'OVP_ATR_ID' })
   automotor: Automotor;
 
-  @OneToMany(() => VinculoSujetoObjeto, vso => vso.objetoValorPredeterminado)
+  @OneToMany(() => VinculoSujetoObjeto, (vso) => vso.objetoValorPredeterminado)
   vinculos: VinculoSujetoObjeto[];
-} 
+}

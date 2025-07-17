@@ -13,7 +13,6 @@ describe('AutomotorService', () => {
   let sujetoPasivoRepository: jest.Mocked<SujetoPasivoRepositoryPort>;
   let vinculoRepository: jest.Mocked<VinculoSujetoObjetoRepositoryPort>;
 
-  
   let ovpRepository: jest.Mocked<ObjetoValorPredeterminadoRepositoryPort>;
 
   beforeEach(async () => {
@@ -90,9 +89,9 @@ describe('AutomotorService', () => {
           id: 1,
           automotorId: 1,
           fechaVigencia: new Date('2024-01-01'),
-          valor: 1500000.00,
+          valor: 1500000.0,
           automotor: null, // or a mock automotor object if needed
-          vinculos: [],    // or a mock array if needed
+          vinculos: [], // or a mock array if needed
         },
       ];
 
@@ -108,7 +107,7 @@ describe('AutomotorService', () => {
         marca: 'Volkswagen',
         fechaAlta: new Date('2020-01-15'),
         fechaVigencia: new Date('2024-01-01'),
-        valorVigente: 1500000.00,
+        valorVigente: 1500000.0,
       });
     });
 
@@ -143,7 +142,7 @@ describe('AutomotorService', () => {
         id: 1,
         automotorId: 1,
         fechaVigencia: new Date('2024-01-01'),
-        valor: 1500000.00,
+        valor: 1500000.0,
         automotor: null,
         vinculos: [],
       };
@@ -183,9 +182,9 @@ describe('AutomotorService', () => {
 
       sujetoPasivoRepository.findByCuit.mockResolvedValue(null);
 
-      await expect(service.registrarTransferencia(1, transferenciaDto)).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        service.registrarTransferencia(1, transferenciaDto),
+      ).rejects.toThrow(BadRequestException);
     });
   });
-}); 
+});

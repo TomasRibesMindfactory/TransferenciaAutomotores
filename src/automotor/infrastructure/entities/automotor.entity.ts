@@ -27,6 +27,6 @@ export class Automotor {
   @Column({ name: 'ATR_FECHA_BAJA', type: 'date', nullable: true })
   fechaBaja: Date | null;
 
-  @OneToMany(() => ObjetoValorPredeterminado, ovp => ovp.automotor)
+  @OneToMany(() => ObjetoValorPredeterminado, (ovp) => ovp.automotor)
   objetosValorPredeterminado: ObjetoValorPredeterminado[];
-} 
+}

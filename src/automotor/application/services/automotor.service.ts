@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { AutomotorRepositoryPort } from '../../domain/ports/automotor-repository.port';
 import { SujetoPasivoRepositoryPort } from '../../domain/ports/sujeto-pasivo-repository.port';
 import { VinculoSujetoObjetoRepositoryPort } from '../../domain/ports/vinculo-sujeto-objeto-repository.port';
@@ -19,12 +23,16 @@ export class AutomotorService {
    */
   async consultarPorDominio(dominio: string) {
     const automotor = await this.automotorRepository.findByDominio(dominio);
-    
+
     if (!automotor) {
-      throw new NotFoundException(`Automotor con dominio ${dominio} no encontrado`);
+      throw new NotFoundException(
+        `Automotor con dominio ${dominio} no encontrado`,
+      );
     }
 
-    const objetosValor = await this.ovpRepository.findByAutomotorId(automotor.id);
+    const objetosValor = await this.ovpRepository.findByAutomotorId(
+      automotor.id,
+    );
     const objetoVigente = objetosValor[0]; // El más reciente
 
     return {
@@ -43,9 +51,11 @@ export class AutomotorService {
    */
   async obtenerTitularActual(ovpId: number) {
     const vinculo = await this.vinculoRepository.findTitularActual(ovpId);
-    
+
     if (!vinculo) {
-      throw new NotFoundException(`No se encontró titular actual para el automotor`);
+      throw new NotFoundException(
+        `No se encontró titular actual para el automotor`,
+      );
     }
 
     return {
@@ -59,22 +69,31 @@ export class AutomotorService {
   /**
    * Registra una transferencia de automotor
    */
-  async registrarTransferencia(ovpId: number, transferenciaDto: TransferenciaAutomotorDto) {
+  async registrarTransferencia(
+    ovpId: number,
+    transferenciaDto: TransferenciaAutomotorDto,
+  ) {
     // Validar que el nuevo titular existe
-    const nuevoTitular = await this.sujetoPasivoRepository.findByCuit(transferenciaDto.cuit);
+    const nuevoTitular = await this.sujetoPasivoRepository.findByCuit(
+      transferenciaDto.cuit,
+    );
     if (!nuevoTitular) {
-      throw new BadRequestException(`El CUIT ${transferenciaDto.cuit} no existe en el sistema`);
+      throw new BadRequestException(
+        `El CUIT ${transferenciaDto.cuit} no existe en el sistema`,
+      );
     }
 
     // Validar que el objeto valor predeterminado existe
     const ovp = await this.ovpRepository.findById(ovpId);
     if (!ovp) {
-      throw new NotFoundException(`Objeto valor predeterminado con ID ${ovpId} no encontrado`);
+      throw new NotFoundException(
+        `Objeto valor predeterminado con ID ${ovpId} no encontrado`,
+      );
     }
 
     // Obtener el titular actual para cerrar su vínculo
     const titularActual = await this.vinculoRepository.findTitularActual(ovpId);
-    
+
     // Calcular fecha de fin del vínculo anterior (un día antes de la nueva fecha de inicio)
     const fechaInicio = new Date(transferenciaDto.fechaInicio);
     const fechaFinAnterior = new Date(fechaInicio);
@@ -82,7 +101,10 @@ export class AutomotorService {
 
     // Cerrar el vínculo anterior si existe
     if (titularActual) {
-      await this.vinculoRepository.updateFechaHasta(titularActual.id, fechaFinAnterior);
+      await this.vinculoRepository.updateFechaHasta(
+        titularActual.id,
+        fechaFinAnterior,
+      );
     }
 
     // Crear el nuevo vínculo
@@ -110,4 +132,4 @@ export class AutomotorService {
       },
     };
   }
-} 
+}

@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AutomotorModule } from './automotor/automotor.module';
 import { Automotor } from './automotor/infrastructure/entities/automotor.entity';
 import { SujetoPasivo } from './automotor/infrastructure/entities/sujeto-pasivo.entity';
@@ -8,20 +9,32 @@ import { ObjetoValorPredeterminado } from './automotor/infrastructure/entities/o
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'mssql',
-      host: 'localhost', 
-      port: 1433, 
-      username:'sa', 
-      password:'Nicolas..8', 
-      database:'TransferenciaAutomotor',
-      entities: [Automotor, SujetoPasivo, VinculoSujetoObjeto, ObjetoValorPredeterminado],
-      synchronize:true,
-      extra :{
-        trustServerCertificate:true,
-      }
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: '.env',
+    }),
+    TypeOrmModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        type: 'mssql',
+        host: configService.get('DB_HOST', 'localhost'),
+        port: parseInt(configService.get('DB_PORT', '1433'), 10),
+        username: configService.get('DB_USERNAME', 'sa'),
+        password: configService.get('DB_PASSWORD', 'TransferApp2024!'),
+        database: configService.get('DB_DATABASE', 'TransferenciaAutomotor'),
+        entities: [
+          Automotor,
+          SujetoPasivo,
+          VinculoSujetoObjeto,
+          ObjetoValorPredeterminado,
+        ],
+        synchronize: true,
+        extra: {
+          trustServerCertificate: true,
+        },
+      }),
     }),
     AutomotorModule,
   ],
 })
-export class AppModule {} 
+export class AppModule {}

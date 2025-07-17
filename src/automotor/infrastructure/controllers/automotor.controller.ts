@@ -1,4 +1,11 @@
-import { Controller, Get, Post, Param, Body, ParseIntPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  Body,
+  ParseIntPipe,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { AutomotorService } from '../../application/services/automotor.service';
 import { ConsultarAutomotorDto } from '../dto/consultar-automotor.dto';
@@ -11,9 +18,13 @@ export class AutomotorController {
 
   @Get('consultar/:dominio')
   @ApiOperation({ summary: 'Consultar automotor por dominio' })
-  @ApiParam({ name: 'dominio', description: 'Dominio del automotor', example: 'ABC123' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiParam({
+    name: 'dominio',
+    description: 'Dominio del automotor',
+    example: 'ABC123',
+  })
+  @ApiResponse({
+    status: 200,
     description: 'Automotor encontrado',
     schema: {
       type: 'object',
@@ -23,10 +34,14 @@ export class AutomotorController {
         registroId: { type: 'number', example: 67890 },
         marca: { type: 'string', example: 'Volkswagen' },
         fechaAlta: { type: 'string', format: 'date', example: '2020-01-15' },
-        fechaVigencia: { type: 'string', format: 'date', example: '2024-01-01' },
-        valorVigente: { type: 'number', example: 1500000.00 },
-      }
-    }
+        fechaVigencia: {
+          type: 'string',
+          format: 'date',
+          example: '2024-01-01',
+        },
+        valorVigente: { type: 'number', example: 1500000.0 },
+      },
+    },
   })
   @ApiResponse({ status: 404, description: 'Automotor no encontrado' })
   async consultarPorDominio(@Param('dominio') dominio: string) {
@@ -35,19 +50,23 @@ export class AutomotorController {
 
   @Get('titular/:ovpId')
   @ApiOperation({ summary: 'Obtener titular actual del automotor' })
-  @ApiParam({ name: 'ovpId', description: 'ID del objeto valor predeterminado', example: 1 })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiParam({
+    name: 'ovpId',
+    description: 'ID del objeto valor predeterminado',
+    example: 1,
+  })
+  @ApiResponse({
+    status: 200,
     description: 'Titular actual encontrado',
     schema: {
       type: 'object',
       properties: {
         cuit: { type: 'string', example: '20-12345678-9' },
         razonSocial: { type: 'string', example: 'Juan Pérez' },
-        porcentaje: { type: 'number', example: 100.00 },
+        porcentaje: { type: 'number', example: 100.0 },
         responsable: { type: 'string', example: 'Sí' },
-      }
-    }
+      },
+    },
   })
   @ApiResponse({ status: 404, description: 'Titular no encontrado' })
   async obtenerTitularActual(@Param('ovpId', ParseIntPipe) ovpId: number) {
@@ -56,14 +75,21 @@ export class AutomotorController {
 
   @Post('transferencia/:ovpId')
   @ApiOperation({ summary: 'Registrar transferencia de automotor' })
-  @ApiParam({ name: 'ovpId', description: 'ID del objeto valor predeterminado', example: 1 })
-  @ApiResponse({ 
-    status: 201, 
+  @ApiParam({
+    name: 'ovpId',
+    description: 'ID del objeto valor predeterminado',
+    example: 1,
+  })
+  @ApiResponse({
+    status: 201,
     description: 'Transferencia registrada exitosamente',
     schema: {
       type: 'object',
       properties: {
-        mensaje: { type: 'string', example: 'Transferencia registrada correctamente.' },
+        mensaje: {
+          type: 'string',
+          example: 'Transferencia registrada correctamente.',
+        },
         transferencia: {
           type: 'object',
           properties: {
@@ -73,22 +99,32 @@ export class AutomotorController {
               properties: {
                 cuit: { type: 'string', example: '20-12345678-9' },
                 razonSocial: { type: 'string', example: 'María González' },
-              }
+              },
             },
-            fechaInicio: { type: 'string', format: 'date', example: '2024-01-15' },
-            porcentaje: { type: 'number', example: 100.00 },
+            fechaInicio: {
+              type: 'string',
+              format: 'date',
+              example: '2024-01-15',
+            },
+            porcentaje: { type: 'number', example: 100.0 },
             responsable: { type: 'string', example: 'Sí' },
-          }
-        }
-      }
-    }
+          },
+        },
+      },
+    },
   })
   @ApiResponse({ status: 400, description: 'Datos de transferencia inválidos' })
-  @ApiResponse({ status: 404, description: 'Automotor o titular no encontrado' })
+  @ApiResponse({
+    status: 404,
+    description: 'Automotor o titular no encontrado',
+  })
   async registrarTransferencia(
     @Param('ovpId', ParseIntPipe) ovpId: number,
     @Body() transferenciaDto: TransferenciaAutomotorDto,
   ) {
-    return this.automotorService.registrarTransferencia(ovpId, transferenciaDto);
+    return this.automotorService.registrarTransferencia(
+      ovpId,
+      transferenciaDto,
+    );
   }
-} 
+}

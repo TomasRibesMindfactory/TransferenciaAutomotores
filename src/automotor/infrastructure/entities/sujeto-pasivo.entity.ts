@@ -18,6 +18,6 @@ export class SujetoPasivo {
   @Column({ name: 'SPO_FECHA_BAJA', type: 'date', nullable: true })
   fechaBaja: Date | null;
 
-  @OneToMany(() => VinculoSujetoObjeto, vso => vso.sujetoPasivo)
+  @OneToMany(() => VinculoSujetoObjeto, (vso) => vso.sujetoPasivo)
   vinculos: VinculoSujetoObjeto[];
-} 
+}

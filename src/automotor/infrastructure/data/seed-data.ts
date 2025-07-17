@@ -60,28 +60,29 @@ export const seedSujetosPasivos: Partial<SujetoPasivo>[] = [
   },
 ];
 
-export const seedObjetosValorPredeterminado: Partial<ObjetoValorPredeterminado>[] = [
-  {
-    automotorId: 1,
-    fechaVigencia: new Date('2024-01-01'),
-    valor: 1500000.00,
-  },
-  {
-    automotorId: 1,
-    fechaVigencia: new Date('2023-01-01'),
-    valor: 1400000.00,
-  },
-  {
-    automotorId: 2,
-    fechaVigencia: new Date('2024-01-01'),
-    valor: 2500000.00,
-  },
-  {
-    automotorId: 3,
-    fechaVigencia: new Date('2024-01-01'),
-    valor: 1800000.00,
-  },
-];
+export const seedObjetosValorPredeterminado: Partial<ObjetoValorPredeterminado>[] =
+  [
+    {
+      automotorId: 1,
+      fechaVigencia: new Date('2024-01-01'),
+      valor: 1500000.0,
+    },
+    {
+      automotorId: 1,
+      fechaVigencia: new Date('2023-01-01'),
+      valor: 1400000.0,
+    },
+    {
+      automotorId: 2,
+      fechaVigencia: new Date('2024-01-01'),
+      valor: 2500000.0,
+    },
+    {
+      automotorId: 3,
+      fechaVigencia: new Date('2024-01-01'),
+      valor: 1800000.0,
+    },
+  ];
 
 export const seedVinculosSujetoObjeto: Partial<VinculoSujetoObjeto>[] = [
   {
@@ -90,7 +91,7 @@ export const seedVinculosSujetoObjeto: Partial<VinculoSujetoObjeto>[] = [
     fechaInicio: new Date('2020-01-15'),
     fechaHasta: null,
     fechaBaja: null,
-    porcentaje: 100.00,
+    porcentaje: 100.0,
     responsable: 'S',
   },
   {
@@ -99,7 +100,7 @@ export const seedVinculosSujetoObjeto: Partial<VinculoSujetoObjeto>[] = [
     fechaInicio: new Date('2019-06-20'),
     fechaHasta: null,
     fechaBaja: null,
-    porcentaje: 100.00,
+    porcentaje: 100.0,
     responsable: 'S',
   },
   {
@@ -108,7 +109,7 @@ export const seedVinculosSujetoObjeto: Partial<VinculoSujetoObjeto>[] = [
     fechaInicio: new Date('2021-03-10'),
     fechaHasta: null,
     fechaBaja: null,
-    porcentaje: 100.00,
+    porcentaje: 100.0,
     responsable: 'S',
   },
-]; 
+];

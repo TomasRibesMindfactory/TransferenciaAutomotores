@@ -1,4 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
 import { SujetoPasivo } from './sujeto-pasivo.entity';
 import { ObjetoValorPredeterminado } from './objeto-valor-predeterminado.entity';
 
@@ -28,11 +34,11 @@ export class VinculoSujetoObjeto {
   @Column({ name: 'VSO_RESPONSABLE', length: 1 })
   responsable: string; // 'S' o 'N'
 
-  @ManyToOne(() => SujetoPasivo, sujetoPasivo => sujetoPasivo.vinculos)
+  @ManyToOne(() => SujetoPasivo, (sujetoPasivo) => sujetoPasivo.vinculos)
   @JoinColumn({ name: 'VSO_SPO_ID' })
   sujetoPasivo: SujetoPasivo;
 
-  @ManyToOne(() => ObjetoValorPredeterminado, ovp => ovp.vinculos)
+  @ManyToOne(() => ObjetoValorPredeterminado, (ovp) => ovp.vinculos)
   @JoinColumn({ name: 'VSO_OVP_ID' })
   objetoValorPredeterminado: ObjetoValorPredeterminado;
-} 
+}

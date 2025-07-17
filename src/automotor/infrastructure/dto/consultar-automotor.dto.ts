@@ -12,4 +12,4 @@ export class ConsultarAutomotorDto {
   @IsNotEmpty()
   @Length(1, 20)
   dominio: string;
-} 
+}

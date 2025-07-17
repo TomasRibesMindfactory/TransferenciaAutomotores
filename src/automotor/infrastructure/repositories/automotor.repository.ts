@@ -27,4 +27,4 @@ export class AutomotorRepository implements AutomotorRepositoryPort {
       relations: ['objetosValorPredeterminado'],
     });
   }
-} 
+}
