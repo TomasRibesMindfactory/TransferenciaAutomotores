@@ -8,7 +8,6 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { AutomotorService } from '../../application/services/automotor.service';
-import { ConsultarAutomotorDto } from '../dto/consultar-automotor.dto';
 import { TransferenciaAutomotorDto } from '../dto/transferencia-automotor.dto';
 import { AltaAutomotorDto } from '../dto/alta-automotor.dto';
 

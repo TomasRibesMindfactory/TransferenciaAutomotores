@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { FormFieldRepositoryPort } from '../../domain/ports/form-field-repository.port';
+import { FormFieldRepositoryPort } from 'src/forms/domain/ports/form-field-repository.port';
 
 @Injectable()
 export class FormFieldSeedService {
@@ -10,7 +10,7 @@ export class FormFieldSeedService {
 
     try {
       // Eliminar campos existentes para recrearlos con la configuración actualizada
-      const existingFields = await this.formFieldRepository.findAll?.() || [];
+      const existingFields = (await this.formFieldRepository.findAll?.()) || [];
       if (existingFields.length > 0) {
         console.log('🗑 Eliminando campos existentes para actualizar...');
         for (const field of existingFields) {
@@ -19,7 +19,7 @@ export class FormFieldSeedService {
       }
 
       console.log('🌱 Poblando campos de formularios actualizados...');
-      
+
       await this.createVehicleRegistrationFields();
       await this.createVehicleTransferFields();
 
@@ -41,20 +41,30 @@ export class FormFieldSeedService {
         placeholder: 'AA111AA o AAA111',
         required: true,
         orderIndex: 1,
-        gridPosition: { row: 1, col: 1 },
         help: 'Ingrese la nueva patente asignada al vehículo',
-        validationRules: JSON.stringify({
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({
           customValidation: 'validateNewPlate',
         }),
-        events: JSON.stringify({
+        eventsConfig: JSON.stringify({
           onValidation: {
             action: 'both',
-            endpoint: '/api/automotor',
+            endpoint: 'automotor/consultar',
             fields: {
-              tipo_rnpa_descripcion: 'tipo_rnpa_descripcion'
+              modelo_descripcion: 'modelo',
+              codigo_alta: 'codigoAlta',
+              codigo_alta_descripcion: 'codigoAltaDescripcion',
+              registro_automotor: 'registroId',
+              registro_descripcion: 'registroDescripcion',
+              fecha_alta_vehiculo: 'fechaAlta',
+              fecha_inicio_vigencia: 'fechaVigencia',
+              anio_fabricacion: 'anioFabricacion',
+              marca_descripcion: 'marca',
+              tipo_rnpa_descripcion: 'tipoDescripcion',
+              valor_vehiculo: 'valorVigente',
             },
-            debounceTime: 500
-          }
+            debounceTime: 500,
+          },
         }),
       },
       {
@@ -65,24 +75,22 @@ export class FormFieldSeedService {
         description: 'ATR_PTH_ID - Clasificación del tipo de vehículo',
         required: true,
         orderIndex: 2,
-        gridPosition: { row: 1, col: 2 },
         help: 'Seleccione el tipo de vehículo según clasificación del registro',
-        options: JSON.stringify([
-          { label: 'Automóvil' },
-          { label: 'Motocicleta' },
-          { label: 'Camión' },
-          { label: 'Camioneta' },
-          { label: 'Colectivo' },
-          { label: 'Remolque' },
-          { label: 'Semirremolque' },
-          { label: 'Acoplado' },
-          { label: 'Ómnibus' },
-          { label: 'Microómnibus' },
-          { label: 'Cuatriciclo' },
-          { label: 'Ciclomotor' },
-          { label: 'Tractor' },
-          { label: 'Maquinaria Especial' }
-        ]),
+        fieldConfig: JSON.stringify({
+          options: [
+            { id: 'automovil', label: 'Automóvil' },
+            { id: 'motocicleta', label: 'Motocicleta' },
+            { id: 'camion', label: 'Camión' },
+            { id: 'camioneta', label: 'Camioneta' },
+            { id: 'colectivo', label: 'Colectivo' },
+            { id: 'remolque', label: 'Remolque' },
+            { id: 'semirremolque', label: 'Semirremolque' },
+            { id: 'tractor', label: 'Tractor' },
+            { id: 'maquinaria_especial', label: 'Maquinaria Especial' },
+          ],
+        }),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
       {
         formId: 'vehicle-registration',
@@ -90,13 +98,16 @@ export class FormFieldSeedService {
         type: 'number',
         label: 'Año de Fabricación',
         description: 'ATR_FECHA_FABRICACION - Año de fabricación del vehículo',
-        required: true,
-        min: 1900,
-        max: 2030,
         placeholder: '2024',
+        required: true,
         orderIndex: 3,
-        gridPosition: { row: 2, col: 1 },
         help: 'Año de fabricación según documentación del fabricante',
+        fieldConfig: JSON.stringify({
+          min: 1900,
+          max: 2030,
+        }),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
       {
         formId: 'vehicle-registration',
@@ -106,12 +117,15 @@ export class FormFieldSeedService {
         description: 'ATR_ORIGEN_RNPA - Origen del vehículo según RNPA',
         required: true,
         orderIndex: 4,
-        gridPosition: { row: 2, col: 2 },
         help: 'Determina si el vehículo es de origen nacional o importado',
-        options: JSON.stringify([
-          { label: 'Nacional' },
-          { label: 'Importado' }
-        ]),
+        fieldConfig: JSON.stringify({
+          options: [
+            { id: 'nacional', label: 'Nacional' },
+            { id: 'importado', label: 'Importado' },
+          ],
+        }),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
       {
         formId: 'vehicle-registration',
@@ -121,25 +135,23 @@ export class FormFieldSeedService {
         description: 'Color principal del vehículo',
         required: true,
         orderIndex: 5,
-        gridPosition: { row: 3, col: 1 },
-        options: JSON.stringify([
-          { label: 'Blanco' },
-          { label: 'Negro' },
-          { label: 'Gris' },
-          { label: 'Azul' },
-          { label: 'Rojo' },
-          { label: 'Verde' },
-          { label: 'Amarillo' },
-          { label: 'Marrón' },
-          { label: 'Bordó' },
-          { label: 'Violeta' },
-          { label: 'Naranja' },
-          { label: 'Celeste' },
-          { label: 'Rosa' },
-          { label: 'Beige' },
-          { label: 'Dorado' },
-          { label: 'Plateado' }
-        ]),
+        fieldConfig: JSON.stringify({
+          options: [
+            { id: 'blanco', label: 'Blanco' },
+            { id: 'negro', label: 'Negro' },
+            { id: 'gris', label: 'Gris' },
+            { id: 'azul', label: 'Azul' },
+            { id: 'rojo', label: 'Rojo' },
+            { id: 'verde', label: 'Verde' },
+            { id: 'amarillo', label: 'Amarillo' },
+            { id: 'marron', label: 'Marrón' },
+            { id: 'bordo', label: 'Bordó' },
+            { id: 'violeta', label: 'Violeta' },
+            { id: 'plateado', label: 'Plateado' },
+          ],
+        }),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
       {
         formId: 'vehicle-registration',
@@ -148,10 +160,13 @@ export class FormFieldSeedService {
         label: 'Número de Motor',
         description: 'ATR_MOTOR - Número identificatorio del motor',
         required: true,
-        maxLength: 50,
         orderIndex: 6,
-        gridPosition: { row: 3, col: 2 },
         help: 'Número grabado en el motor del vehículo',
+        fieldConfig: JSON.stringify({
+          maxLength: 50,
+        }),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
       {
         formId: 'vehicle-registration',
@@ -160,25 +175,29 @@ export class FormFieldSeedService {
         label: 'Número de Chasis/VIN',
         description: 'ATR_CHASIS - Número identificatorio del chasis',
         required: true,
-        maxLength: 50,
         orderIndex: 7,
-        gridPosition: { row: 4, col: 1 },
         help: 'Número de chasis o VIN del vehículo',
+        fieldConfig: JSON.stringify({
+          maxLength: 50,
+        }),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
       {
         formId: 'vehicle-registration',
         name: 'fecha_primera_inscripcion',
         type: 'date',
         label: 'Fecha de Primera Inscripción',
-        description: 'ATR_FECHA_ALTA - Fecha de primera inscripción del vehículo',
+        description:
+          'ATR_FECHA_ALTA - Fecha de primera inscripción del vehículo',
         required: true,
-        defaultValue: '{{ today }}',
         orderIndex: 8,
-        gridPosition: { row: 4, col: 2 },
         help: 'Fecha en que se realiza la primera inscripción',
+        defaultValue: '{{ today }}',
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
-
-      // Información RNPA
       {
         formId: 'vehicle-registration',
         name: 'marca_rnpa',
@@ -187,8 +206,29 @@ export class FormFieldSeedService {
         description: 'ATR_ID_MARCA_RNPA - Código de marca según RNPA',
         required: true,
         orderIndex: 9,
-        gridPosition: { row: 5, col: 1 },
         help: 'Código de marca asignado por el RNPA',
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({
+          customValidation: 'validateRnpaCode',
+        }),
+        eventsConfig: JSON.stringify({
+          onValidation: {
+            action: 'both',
+            endpoint: 'forms/autocomplete',
+            requestBody: {
+              endpoint: 'PAR_MARCAS_RNPA',
+              value: '{{ field_value }}',
+              context: {
+                table: 'par_marcas_rnpa',
+                searchField: 'codigo_marca',
+              },
+            },
+            fields: {
+              marca_descripcion: 'descripcion',
+            },
+            debounceTime: 500,
+          },
+        }),
       },
       {
         formId: 'vehicle-registration',
@@ -198,8 +238,10 @@ export class FormFieldSeedService {
         description: 'Descripción de la marca del vehículo',
         readonly: true,
         orderIndex: 10,
-        gridPosition: { row: 5, col: 2 },
         help: 'Se completa automáticamente al ingresar el código de marca',
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
       {
         formId: 'vehicle-registration',
@@ -209,8 +251,29 @@ export class FormFieldSeedService {
         description: 'ATR_ID_TIPO_RNPA - Código de tipo según RNPA',
         required: true,
         orderIndex: 11,
-        gridPosition: { row: 6, col: 1 },
         help: 'Código de tipo de vehículo según RNPA',
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({
+          customValidation: 'validateRnpaCode',
+        }),
+        eventsConfig: JSON.stringify({
+          onValidation: {
+            action: 'both',
+            endpoint: 'forms/autocomplete',
+            requestBody: {
+              endpoint: 'PAR_TIPOS_RNPA',
+              value: '{{ field_value }}',
+              context: {
+                table: 'par_tipos_rnpa',
+                searchField: 'codigo_tipo',
+              },
+            },
+            fields: {
+              tipo_rnpa_descripcion: 'descripcion',
+            },
+            debounceTime: 500,
+          },
+        }),
       },
       {
         formId: 'vehicle-registration',
@@ -220,7 +283,9 @@ export class FormFieldSeedService {
         description: 'Descripción del tipo de vehículo según RNPA',
         readonly: true,
         orderIndex: 12,
-        gridPosition: { row: 6, col: 2 },
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
       {
         formId: 'vehicle-registration',
@@ -230,8 +295,33 @@ export class FormFieldSeedService {
         description: 'ATR_PMO_ID - Código del modelo según RNPA',
         required: true,
         orderIndex: 13,
-        gridPosition: { row: 7, col: 1 },
         help: 'Código del modelo asignado por el RNPA',
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({
+          customValidation: 'validateRnpaCode',
+        }),
+        eventsConfig: JSON.stringify({
+          onValidation: {
+            action: 'both',
+            endpoint: 'forms/autocomplete',
+            requestBody: {
+              endpoint: 'PAR_MODELOS_RNPA',
+              value: '{{ field_value }}',
+              context: {
+                table: 'par_modelos_rnpa',
+                searchField: 'codigo_modelo',
+                filterBy: {
+                  marca_id: '{{ marca_rnpa }}',
+                  tipo_id: '{{ tipo_rnpa }}',
+                },
+              },
+            },
+            fields: {
+              modelo_descripcion: 'descripcion',
+            },
+            debounceTime: 500,
+          },
+        }),
       },
       {
         formId: 'vehicle-registration',
@@ -241,7 +331,9 @@ export class FormFieldSeedService {
         description: 'L_PMO_PMO_DESCRIPCION - Descripción del modelo',
         readonly: true,
         orderIndex: 14,
-        gridPosition: { row: 7, col: 2 },
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
       {
         formId: 'vehicle-registration',
@@ -249,10 +341,13 @@ export class FormFieldSeedService {
         type: 'text',
         label: 'Versión del Modelo',
         description: 'Versión específica del modelo del vehículo',
-        maxLength: 100,
         orderIndex: 15,
-        gridPosition: { row: 8, col: 1 },
         help: 'Ej: LT, LTZ, Titanium, etc.',
+        fieldConfig: JSON.stringify({
+          maxLength: 100,
+        }),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
       {
         formId: 'vehicle-registration',
@@ -262,20 +357,20 @@ export class FormFieldSeedService {
         description: 'Tipo de combustible del vehículo',
         required: true,
         orderIndex: 16,
-        gridPosition: { row: 8, col: 2 },
-        options: JSON.stringify([
-          { label: 'Nafta' },
-          { label: 'Diesel' },
-          { label: 'GNC (Gas Natural Comprimido)' },
-          { label: 'Eléctrico' },
-          { label: 'Híbrido' },
-          { label: 'Flex (Nafta/Etanol)' },
-          { label: 'GLP (Gas Licuado de Petróleo)' },
-          { label: 'Hidrógeno' }
-        ]),
+        fieldConfig: JSON.stringify({
+          options: [
+            { id: 'nafta', label: 'Nafta' },
+            { id: 'diesel', label: 'Diesel' },
+            { id: 'gnc', label: 'GNC (Gas Natural Comprimido)' },
+            { id: 'electrico', label: 'Eléctrico' },
+            { id: 'hibrido', label: 'Híbrido' },
+            { id: 'flex', label: 'Flex (Nafta/Etanol)' },
+            { id: 'hidrogeno', label: 'Hidrógeno' },
+          ],
+        }),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
-
-      // Registro y Documentación
       {
         formId: 'vehicle-registration',
         name: 'registro_automotor',
@@ -284,27 +379,48 @@ export class FormFieldSeedService {
         description: 'ATR_PRT_ID - Registro donde se inscribe el vehículo',
         required: true,
         orderIndex: 17,
-        gridPosition: { row: 9, col: 1 },
         help: 'Seleccione el registro automotor correspondiente',
-        options: JSON.stringify([
-          { label: 'Registro Seccional 001 - Capital Federal' },
-          { label: 'Registro Seccional 002 - La Plata' },
-          { label: 'Registro Seccional 003 - San Isidro' },
-          { label: 'Registro Seccional 004 - San Martín' },
-          { label: 'Registro Seccional 005 - Lomas de Zamora' },
-          { label: 'Registro Seccional 006 - Quilmes' },
-          { label: 'Registro Seccional 007 - Morón' }
-        ]),
+        fieldConfig: JSON.stringify({
+          loadFromEndpoint: true,
+          endpoint: 'forms/dependent-options',
+          requestBody: {
+            endpoint: 'PAR_REGISTRO_AUTOMOTORES',
+            parentValue: 'ALL',
+          },
+          valueField: 'codigo_registro',
+          labelField: 'descripcion',
+        }),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({
+          onChange: {
+            action: 'populate',
+            endpoint: 'forms/autocomplete',
+            requestBody: {
+              endpoint: 'PAR_REGISTRO_AUTOMOTORES',
+              value: '{{ field_value }}',
+              context: {
+                table: 'par_registro_automotores',
+                searchField: 'codigo_registro',
+              },
+            },
+            fields: {
+              registro_descripcion: 'descripcion',
+            },
+          },
+        }),
       },
       {
         formId: 'vehicle-registration',
         name: 'registro_descripcion',
         type: 'text',
         label: 'Descripción del Registro',
-        description: 'L_PRT_PRT_DESCRIPCION - Descripción del registro automotor',
+        description:
+          'L_PRT_PRT_DESCRIPCION - Descripción del registro automotor',
         readonly: true,
         orderIndex: 18,
-        gridPosition: { row: 9, col: 2 },
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
       {
         formId: 'vehicle-registration',
@@ -314,16 +430,34 @@ export class FormFieldSeedService {
         description: 'ATR_PCA_ID - Motivo del alta del vehículo',
         required: true,
         orderIndex: 19,
-        gridPosition: { row: 10, col: 1 },
-        options: JSON.stringify([
-          { label: 'Alta Normal - Vehículo 0KM' },
-          { label: 'Importación Particular' },
-          { label: 'Importación Comercial' },
-          { label: 'Transferencia de Jurisdicción' },
-          { label: 'Rehabilitación' },
-          { label: 'Reposición por Robo/Hurto' },
-          { label: 'Cambio de Motor' }
-        ]),
+        fieldConfig: JSON.stringify({
+          loadFromEndpoint: true,
+          endpoint: 'forms/dependent-options',
+          requestBody: {
+            endpoint: 'PAR_CODIGOS_ALTAS',
+            parentValue: 'ALL',
+          },
+          valueField: 'codigo_alta',
+          labelField: 'descripcion',
+        }),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({
+          onChange: {
+            action: 'populate',
+            endpoint: 'forms/autocomplete',
+            requestBody: {
+              endpoint: 'PAR_CODIGOS_ALTAS',
+              value: '{{ field_value }}',
+              context: {
+                table: 'par_codigos_altas',
+                searchField: 'codigo_alta',
+              },
+            },
+            fields: {
+              codigo_alta_descripcion: 'descripcion',
+            },
+          },
+        }),
       },
       {
         formId: 'vehicle-registration',
@@ -333,7 +467,9 @@ export class FormFieldSeedService {
         description: 'L_PCA_PCA_DESCRIPCION - Descripción del código de alta',
         readonly: true,
         orderIndex: 20,
-        gridPosition: { row: 10, col: 2 },
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
       {
         formId: 'vehicle-registration',
@@ -342,10 +478,13 @@ export class FormFieldSeedService {
         label: 'Número de Título',
         description: 'Número del título del automotor',
         required: true,
-        maxLength: 20,
         orderIndex: 21,
-        gridPosition: { row: 11, col: 1 },
         help: 'Número del título emitido por el registro',
+        fieldConfig: JSON.stringify({
+          maxLength: 20,
+        }),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
       {
         formId: 'vehicle-registration',
@@ -354,9 +493,11 @@ export class FormFieldSeedService {
         label: 'Fecha de Emisión del Título',
         description: 'Fecha de emisión del título del automotor',
         required: true,
-        defaultValue: '{{ today }}',
         orderIndex: 22,
-        gridPosition: { row: 11, col: 2 },
+        defaultValue: '{{ today }}',
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
       {
         formId: 'vehicle-registration',
@@ -364,13 +505,14 @@ export class FormFieldSeedService {
         type: 'textarea',
         label: 'Observaciones del Título',
         description: 'Observaciones especiales sobre el título',
-        maxLength: 500,
         placeholder: 'Observaciones especiales sobre la documentación...',
         orderIndex: 23,
-        gridPosition: { row: 12, col: 1, colspan: 2 },
+        fieldConfig: JSON.stringify({
+          maxLength: 500,
+        }),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
-
-      // Propietario Inicial
       {
         formId: 'vehicle-registration',
         name: 'cuit_propietario',
@@ -380,20 +522,27 @@ export class FormFieldSeedService {
         placeholder: 'XX-XXXXXXXX-X',
         required: true,
         orderIndex: 24,
-        gridPosition: { row: 13, col: 1 },
         help: 'CUIT de la persona física o jurídica propietaria',
-        validationRules: JSON.stringify({
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({
           customValidation: 'validateCuit',
         }),
-        events: JSON.stringify({
+        eventsConfig: JSON.stringify({
           onValidation: {
             action: 'both',
-            endpoint: '/api/contribuyente',
-            fields: {
-              propietario_descripcion: 'nombre_completo'
+            endpoint: 'forms/autocomplete',
+            requestBody: {
+              endpoint: 'SUJETOS_PASIVOS',
+              value: '{{ field_value }}',
+              context: { table: 'sujetos_pasivos', searchField: 'cuit' },
             },
-            debounceTime: 500
-          }
+            fields: {
+              propietario_descripcion: 'razonSocial',
+              tipo_documento: 'tipoDocumento',
+              domicilio_fiscal: 'domicilioFiscal',
+            },
+            debounceTime: 500,
+          },
         }),
       },
       {
@@ -404,7 +553,9 @@ export class FormFieldSeedService {
         description: 'Información del propietario obtenida del sistema',
         readonly: true,
         orderIndex: 25,
-        gridPosition: { row: 13, col: 2 },
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
       {
         formId: 'vehicle-registration',
@@ -413,12 +564,15 @@ export class FormFieldSeedService {
         label: 'Porcentaje de Propiedad',
         description: 'Porcentaje de propiedad del vehículo',
         required: true,
-        defaultValue: '100',
-        min: 0,
-        max: 100,
         orderIndex: 26,
-        gridPosition: { row: 14, col: 1 },
+        defaultValue: '100',
         help: 'Porcentaje de propiedad (normalmente 100% para un solo propietario)',
+        fieldConfig: JSON.stringify({
+          min: 0,
+          max: 100,
+        }),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
       {
         formId: 'vehicle-registration',
@@ -427,17 +581,19 @@ export class FormFieldSeedService {
         label: 'Tipo de Vínculo',
         description: 'VSO_PTV_ID - Tipo de vínculo entre sujeto y objeto',
         required: true,
-        defaultValue: 'PRO',
         orderIndex: 27,
-        gridPosition: { row: 14, col: 2 },
+        defaultValue: 'PRO',
         help: 'Seleccione el tipo de vínculo según PAR_TIPOS_VINCULOS',
-        options: JSON.stringify([
-          { label: 'Propietario' },
-          { label: 'Usuario' },
-          { label: 'Tenedor' },
-          { label: 'Conductor Habitual' },
-          { label: 'Poseedor' }
-        ]),
+        fieldConfig: JSON.stringify({
+          options: [
+            { id: 'propietario', label: 'Propietario' },
+            { id: 'usuario', label: 'Usuario' },
+            { id: 'tenedor', label: 'Tenedor' },
+            { id: 'poseedor', label: 'Poseedor' },
+          ],
+        }),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
       {
         formId: 'vehicle-registration',
@@ -446,40 +602,47 @@ export class FormFieldSeedService {
         label: 'Fecha Inicio Vínculo',
         description: 'VSO_FECHA_INICIO - Fecha de inicio del vínculo',
         required: true,
-        defaultValue: '{{ today }}',
         orderIndex: 28,
-        gridPosition: { row: 15, col: 1 },
+        defaultValue: '{{ today }}',
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
       {
         formId: 'vehicle-registration',
         name: 'es_responsable',
         type: 'radio',
         label: '¿Será Responsable Tributario?',
-        description: 'VSO_RESPONSABLE - Indica si será responsable del pago de impuestos',
+        description:
+          'VSO_RESPONSABLE - Indica si será responsable del pago de impuestos',
         required: true,
-        defaultValue: 'S',
         orderIndex: 29,
-        gridPosition: { row: 15, col: 2 },
-        help: 'Marque \'Sí\' si el propietario será responsable tributario',
-        options: JSON.stringify([
-          { label: 'Sí' },
-          { label: 'No' }
-        ]),
+        defaultValue: 'S',
+        help: "Marque 'Sí' si el propietario será responsable tributario",
+        fieldConfig: JSON.stringify({
+          options: [
+            { id: 'si', label: 'Sí' },
+            { id: 'no', label: 'No' },
+          ],
+        }),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
-
-      // Datos Técnicos
       {
         formId: 'vehicle-registration',
         name: 'cilindrada',
         type: 'number',
         label: 'Cilindrada (cm³)',
         description: 'Cilindrada del motor en centímetros cúbicos',
-        min: 0,
-        max: 10000,
         placeholder: '1600',
         orderIndex: 30,
-        gridPosition: { row: 16, col: 1 },
         help: 'Cilindrada del motor según especificaciones técnicas',
+        fieldConfig: JSON.stringify({
+          min: 0,
+          max: 10000,
+        }),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
       {
         formId: 'vehicle-registration',
@@ -487,12 +650,15 @@ export class FormFieldSeedService {
         type: 'number',
         label: 'Potencia (HP)',
         description: 'Potencia del motor en caballos de fuerza',
-        min: 0,
-        max: 1000,
         placeholder: '120',
         orderIndex: 31,
-        gridPosition: { row: 16, col: 2 },
         help: 'Potencia del motor según especificaciones técnicas',
+        fieldConfig: JSON.stringify({
+          min: 0,
+          max: 1000,
+        }),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
       {
         formId: 'vehicle-registration',
@@ -500,12 +666,15 @@ export class FormFieldSeedService {
         type: 'number',
         label: 'Peso del Vehículo (kg)',
         description: 'Peso del vehículo en kilogramos',
-        min: 0,
-        max: 50000,
         placeholder: '1200',
         orderIndex: 32,
-        gridPosition: { row: 17, col: 1 },
         help: 'Peso del vehículo sin carga',
+        fieldConfig: JSON.stringify({
+          min: 0,
+          max: 50000,
+        }),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
       {
         formId: 'vehicle-registration',
@@ -513,12 +682,15 @@ export class FormFieldSeedService {
         type: 'number',
         label: 'Capacidad de Carga (kg)',
         description: 'Capacidad máxima de carga en kilogramos',
-        min: 0,
-        max: 50000,
         placeholder: '500',
         orderIndex: 33,
-        gridPosition: { row: 17, col: 2 },
         help: 'Capacidad máxima de carga del vehículo',
+        fieldConfig: JSON.stringify({
+          min: 0,
+          max: 50000,
+        }),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
       {
         formId: 'vehicle-registration',
@@ -526,12 +698,15 @@ export class FormFieldSeedService {
         type: 'number',
         label: 'Cantidad de Ejes',
         description: 'Número de ejes del vehículo',
-        min: 1,
-        max: 10,
-        defaultValue: '2',
         orderIndex: 34,
-        gridPosition: { row: 18, col: 1 },
+        defaultValue: '2',
         help: 'Cantidad total de ejes del vehículo',
+        fieldConfig: JSON.stringify({
+          min: 1,
+          max: 10,
+        }),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
       {
         formId: 'vehicle-registration',
@@ -539,12 +714,15 @@ export class FormFieldSeedService {
         type: 'number',
         label: 'Cantidad de Ruedas',
         description: 'Número total de ruedas del vehículo',
-        min: 2,
-        max: 20,
-        defaultValue: '4',
         orderIndex: 35,
-        gridPosition: { row: 18, col: 2 },
+        defaultValue: '4',
         help: 'Cantidad total de ruedas del vehículo',
+        fieldConfig: JSON.stringify({
+          min: 2,
+          max: 20,
+        }),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
       {
         formId: 'vehicle-registration',
@@ -552,11 +730,14 @@ export class FormFieldSeedService {
         type: 'number',
         label: 'Tara (kg)',
         description: 'Peso en vacío del vehículo',
-        min: 0,
-        max: 50000,
         orderIndex: 36,
-        gridPosition: { row: 19, col: 1 },
         help: 'Peso del vehículo sin carga ni pasajeros',
+        fieldConfig: JSON.stringify({
+          min: 0,
+          max: 50000,
+        }),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
       {
         formId: 'vehicle-registration',
@@ -564,14 +745,15 @@ export class FormFieldSeedService {
         type: 'number',
         label: 'PBT - Peso Bruto Total (kg)',
         description: 'Peso bruto total máximo autorizado',
-        min: 0,
-        max: 100000,
         orderIndex: 37,
-        gridPosition: { row: 19, col: 2 },
         help: 'Peso bruto total máximo autorizado para el vehículo',
+        fieldConfig: JSON.stringify({
+          min: 0,
+          max: 100000,
+        }),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
-
-      // Documentación y Control
       {
         formId: 'vehicle-registration',
         name: 'documentos_presentados',
@@ -580,21 +762,22 @@ export class FormFieldSeedService {
         description: 'Seleccione los documentos presentados para el alta',
         required: true,
         orderIndex: 38,
-        gridPosition: { row: 20, col: 1, colspan: 2 },
         help: 'Seleccione todos los documentos presentados para el alta',
-        options: JSON.stringify([
-          { label: 'Certificado de Fabricación' },
-          { label: 'Factura de Compra' },
-          { label: 'Certificado de Importación' },
-          { label: 'Certificado Libre de Deuda' },
-          { label: 'DNI del Propietario' },
-          { label: 'Constancia de CUIT' },
-          { label: 'Poder Notarial (si aplica)' },
-          { label: 'Formulario 13I' },
-          { label: 'Certificado GNC (si aplica)' },
-          { label: 'Verificación Técnica Vehicular' },
-          { label: 'Formulario DNRPA' }
-        ]),
+        fieldConfig: JSON.stringify({
+          options: [
+            { id: 'cert_fabricacion', label: 'Certificado de Fabricación' },
+            { id: 'factura_compra', label: 'Factura de Compra' },
+            { id: 'cert_importacion', label: 'Certificado de Importación' },
+            { id: 'cert_libre_deuda', label: 'Certificado Libre de Deuda' },
+            { id: 'dni_propietario', label: 'DNI del Propietario' },
+            { id: 'constancia_cuit', label: 'Constancia de CUIT' },
+            { id: 'poder_notarial', label: 'Poder Notarial (si aplica)' },
+            { id: 'formulario_13i', label: 'Formulario 13I' },
+            { id: 'cert_gnc', label: 'Certificado GNC (si aplica)' },
+          ],
+        }),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
       {
         formId: 'vehicle-registration',
@@ -604,13 +787,15 @@ export class FormFieldSeedService {
         description: '¿Se realizó la verificación policial del vehículo?',
         required: true,
         orderIndex: 39,
-        gridPosition: { row: 21, col: 1 },
         help: 'Estado de la verificación policial del vehículo',
-        options: JSON.stringify([
-          { label: 'Aprobada' },
-          { label: 'Pendiente' },
-          { label: 'Rechazada' }
-        ]),
+        fieldConfig: JSON.stringify({
+          options: [
+            { id: 'verificado', label: 'Sí, verificado' },
+            { id: 'no_verificado', label: 'No verificado' },
+          ],
+        }),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
       {
         formId: 'vehicle-registration',
@@ -619,10 +804,12 @@ export class FormFieldSeedService {
         label: 'Usuario de Alta',
         description: 'ATR_USUARIO_ALTA - Usuario que registra el alta',
         readonly: true,
-        defaultValue: '{{ currentUser }}',
         orderIndex: 40,
-        gridPosition: { row: 21, col: 2 },
         help: 'Se completa automáticamente con el usuario actual del sistema',
+        defaultValue: '{{ currentUser }}',
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
       {
         formId: 'vehicle-registration',
@@ -631,9 +818,11 @@ export class FormFieldSeedService {
         label: 'Fecha y Hora de Alta',
         description: 'ATR_FECHA_ALTA - Timestamp del alta del vehículo',
         readonly: true,
-        defaultValue: '{{ now }}',
         orderIndex: 41,
-        gridPosition: { row: 22, col: 1 },
+        defaultValue: '{{ now }}',
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
       {
         formId: 'vehicle-registration',
@@ -642,41 +831,44 @@ export class FormFieldSeedService {
         label: 'Observaciones Generales',
         description: 'Observaciones adicionales sobre el alta del vehículo',
         placeholder: 'Observaciones adicionales sobre el alta del vehículo...',
-        maxLength: 1000,
         orderIndex: 42,
-        gridPosition: { row: 22, col: 2 },
         help: 'Registre cualquier información adicional relevante',
+        fieldConfig: JSON.stringify({
+          maxLength: 1000,
+        }),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
     ];
 
-    for (const field of fields) {
-      await this.formFieldRepository.create(field);
+    for (const fieldData of fields) {
+      await this.formFieldRepository.create(fieldData);
     }
   }
 
   private async createVehicleTransferFields(): Promise<void> {
     const fields = [
-      // Datos del Vehículo
+      // SECCIÓN: Datos del Vehículo
       {
         formId: 'vehicle-transfer',
         name: 'patente',
         type: 'plate',
         label: 'Dominio (Patente)',
-        description: 'ATR_DOMINIO - Ingrese la patente del vehículo a consultar/transferir',
+        description:
+          'ATR_DOMINIO - Ingrese la patente del vehículo a consultar/transferir',
         placeholder: 'AB123CD',
         required: true,
         readonly: false,
         orderIndex: 1,
-        gridPosition: { row: 1, col: 1 },
         help: 'Campo clave para la búsqueda del vehículo en el sistema',
-        validationRules: JSON.stringify({
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({
           customValidation: 'validatePlate',
         }),
-        events: JSON.stringify({
+        eventsConfig: JSON.stringify({
           onValidation: {
             action: 'both',
-            endpoint: '/api/automotor',
-            debounceTime: 800,
+            endpoint: 'automotor/consultar',
             fields: {
               modelo_rnpa: 'modelo_codigo',
               modelo_descripcion: 'modelo_descripcion',
@@ -689,9 +881,10 @@ export class FormFieldSeedService {
               fecha_fabricacion: 'anio_fabricacion',
               fecha_rige: 'fecha_rige_vigencia',
               origen_rnpa: 'origen',
-              archivo_id: 'vehiculo_id'
-            }
-          }
+              archivo_id: 'vehiculo_id',
+            },
+            debounceTime: 800,
+          },
         }),
       },
       {
@@ -701,39 +894,266 @@ export class FormFieldSeedService {
         label: 'Tipo de Vehículo',
         description: 'ATR_PTH_ID - Código interno del tipo de vehículo',
         readonly: true,
-        defaultValue: 'AUTO',
         orderIndex: 2,
-        gridPosition: { row: 1, col: 2 },
+        defaultValue: 'AUTO',
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
-      
-      // Continúa con todos los demás campos del formulario de transferencia...
-      // (Aquí agregaría todos los campos pero para mantener la respuesta manejable, 
-      // incluyo solo algunos campos representativos)
-      
+      {
+        formId: 'vehicle-transfer',
+        name: 'modelo_rnpa',
+        type: 'text',
+        label: 'Modelo RNPA',
+        description: 'ATR_PMO_ID - Identificación del modelo según RNPA',
+        readonly: true,
+        orderIndex: 3,
+        help: 'Código del modelo asignado por el Registro Nacional de Propiedad del Automotor',
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
+      },
+      {
+        formId: 'vehicle-transfer',
+        name: 'modelo_descripcion',
+        type: 'text',
+        label: 'Descripción del Modelo',
+        description:
+          'L_PMO_PMO_DESCRIPCION - Descripción del modelo del vehículo',
+        readonly: true,
+        orderIndex: 4,
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
+      },
+      {
+        formId: 'vehicle-transfer',
+        name: 'codigo_alta',
+        type: 'text',
+        label: 'Código de Alta',
+        description: 'ATR_PCA_ID - Código de alta del vehículo',
+        readonly: true,
+        orderIndex: 5,
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
+      },
+      {
+        formId: 'vehicle-transfer',
+        name: 'codigo_alta_descripcion',
+        type: 'text',
+        label: 'Descripción Código de Alta',
+        description: 'L_PCA_PCA_DESCRIPCION - Descripción del código de alta',
+        readonly: true,
+        orderIndex: 6,
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
+      },
+      {
+        formId: 'vehicle-transfer',
+        name: 'registro_automotor',
+        type: 'text',
+        label: 'Registro Automotor',
+        description: 'ATR_PRT_ID - Código del registro automotor',
+        readonly: true,
+        orderIndex: 7,
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
+      },
+      {
+        formId: 'vehicle-transfer',
+        name: 'registro_descripcion',
+        type: 'text',
+        label: 'Descripción Registro',
+        description:
+          'L_PRT_PRT_DESCRIPCION - Descripción del registro automotor',
+        readonly: true,
+        orderIndex: 8,
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
+      },
+      {
+        formId: 'vehicle-transfer',
+        name: 'fecha_alta',
+        type: 'date',
+        label: 'Fecha de Alta',
+        description: 'ATR_FECHA_ALTA - Fecha de alta del registro del vehículo',
+        readonly: true,
+        orderIndex: 9,
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
+      },
+      {
+        formId: 'vehicle-transfer',
+        name: 'fecha_inicio',
+        type: 'date',
+        label: 'Fecha de Inicio de Vigencia',
+        description: 'ATR_FECHA_INICIO - Fecha de inicio de vigencia',
+        readonly: true,
+        orderIndex: 10,
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
+      },
+      {
+        formId: 'vehicle-transfer',
+        name: 'fecha_fabricacion',
+        type: 'number',
+        label: 'Año de Fabricación',
+        description: 'ATR_FECHA_FABRICACION - Año de fabricación del vehículo',
+        placeholder: '2024',
+        readonly: true,
+        orderIndex: 11,
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
+      },
+      {
+        formId: 'vehicle-transfer',
+        name: 'fecha_rige',
+        type: 'date',
+        label: 'Fecha que Rige',
+        description:
+          'ATR_FECHA_RIGE - Fecha en que comienza a regir la vigencia',
+        readonly: true,
+        orderIndex: 12,
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
+      },
+      {
+        formId: 'vehicle-transfer',
+        name: 'origen_rnpa',
+        type: 'radio',
+        label: 'Origen RNPA',
+        description: 'ATR_ORIGEN_RNPA - Origen del vehículo según RNPA',
+        required: true,
+        orderIndex: 13,
+        help: 'Determina si el vehículo es de origen nacional o importado',
+        fieldConfig: JSON.stringify({
+          options: [
+            { id: 'N', label: 'Nacional' },
+            { id: 'I', label: 'Importado' },
+          ],
+        }),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
+      },
+      {
+        formId: 'vehicle-transfer',
+        name: 'marca_rnpa',
+        type: 'text',
+        label: 'Marca RNPA',
+        description: 'ATR_ID_MARCA_RNPA - Código de marca según RNPA',
+        placeholder: 'Código de marca',
+        orderIndex: 14,
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
+      },
+      {
+        formId: 'vehicle-transfer',
+        name: 'marca_descripcion',
+        type: 'text',
+        label: 'Descripción Marca',
+        description: 'Descripción de la marca del vehículo',
+        readonly: true,
+        orderIndex: 15,
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
+      },
+      {
+        formId: 'vehicle-transfer',
+        name: 'tipo_rnpa',
+        type: 'text',
+        label: 'Tipo RNPA',
+        description: 'ATR_ID_TIPO_RNPA - Código de tipo según RNPA',
+        orderIndex: 16,
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
+      },
+      {
+        formId: 'vehicle-transfer',
+        name: 'tipo_rnpa_descripcion',
+        type: 'text',
+        label: 'Descripción Tipo RNPA',
+        description: 'Descripción del tipo de vehículo según RNPA',
+        readonly: true,
+        orderIndex: 17,
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
+      },
+      {
+        formId: 'vehicle-transfer',
+        name: 'modelo_rnpa_descripcion',
+        type: 'text',
+        label: 'Descripción Modelo RNPA',
+        description: 'ATR_ID_MODELO_RNPA - Descripción del modelo según RNPA',
+        readonly: true,
+        orderIndex: 18,
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
+      },
+      {
+        formId: 'vehicle-transfer',
+        name: 'archivo_id',
+        type: 'hidden',
+        label: 'Número de Archivo',
+        description: 'ATR_ID - Clave primaria del registro del vehículo',
+        readonly: true,
+        orderIndex: 19,
+        defaultValue: '',
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
+      },
+
+      // SECCIÓN: Propietarios
       {
         formId: 'vehicle-transfer',
         name: 'cuit_vendedor',
         type: 'cuit',
         label: 'CUIT del Propietario Actual',
-        description: 'CUIT del propietario que transfiere el vehículo (VSO_SPO_ID)',
+        description:
+          'CUIT del propietario que transfiere el vehículo (VSO_SPO_ID)',
         placeholder: 'XX-XXXXXXXX-X',
         required: true,
-        orderIndex: 10,
-        gridPosition: { row: 5, col: 1 },
+        orderIndex: 20,
         help: 'Debe corresponder a un registro válido en SUJETOS_PASIVOS',
-        validationRules: JSON.stringify({
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({
           customValidation: 'validateCuit',
         }),
-        events: JSON.stringify({
+        eventsConfig: JSON.stringify({
           onValidation: {
             action: 'both',
-            endpoint: '/api/contribuyente',
-            debounceTime: 600,
+            endpoint: 'contribuyente',
             fields: {
-              vendedor_descripcion: 'nombre_completo'
-            }
-          }
+              vendedor_descripcion: 'nombre_completo',
+            },
+            debounceTime: 600,
+          },
         }),
+      },
+      {
+        formId: 'vehicle-transfer',
+        name: 'vendedor_descripcion',
+        type: 'text',
+        label: 'Datos del Vendedor',
+        description: 'Información del propietario actual obtenida del sistema',
+        readonly: true,
+        orderIndex: 21,
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
       {
         formId: 'vehicle-transfer',
@@ -743,27 +1163,291 @@ export class FormFieldSeedService {
         description: 'CUIT del nuevo propietario del vehículo',
         placeholder: 'XX-XXXXXXXX-X',
         required: true,
-        orderIndex: 11,
-        gridPosition: { row: 5, col: 2 },
+        orderIndex: 22,
         help: 'Debe corresponder a un registro válido en SUJETOS_PASIVOS',
-        validationRules: JSON.stringify({
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({
           customValidation: 'validateCuit',
         }),
-        events: JSON.stringify({
+        eventsConfig: JSON.stringify({
           onValidation: {
             action: 'both',
-            endpoint: '/api/contribuyente',
-            debounceTime: 600,
+            endpoint: 'contribuyente',
             fields: {
-              comprador_descripcion: 'nombre_completo'
-            }
-          }
+              comprador_descripcion: 'nombre_completo',
+            },
+            debounceTime: 600,
+          },
         }),
+      },
+      {
+        formId: 'vehicle-transfer',
+        name: 'comprador_descripcion',
+        type: 'text',
+        label: 'Datos del Comprador',
+        description: 'Información del nuevo propietario obtenida del sistema',
+        readonly: true,
+        orderIndex: 23,
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
+      },
+      {
+        formId: 'vehicle-transfer',
+        name: 'porcentaje_propiedad',
+        type: 'percentage',
+        label: 'Porcentaje de Propiedad',
+        description: 'Porcentaje de propiedad del vehículo (VSO_RESPONSABLE)',
+        placeholder: '100',
+        required: true,
+        orderIndex: 24,
+        help: 'Ingrese el porcentaje de propiedad que corresponde al nuevo propietario',
+        fieldConfig: JSON.stringify({
+          min: 0,
+          max: 100,
+        }),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
+      },
+      {
+        formId: 'vehicle-transfer',
+        name: 'tipo_vinculo',
+        type: 'select',
+        label: 'Tipo de Vínculo',
+        description: 'VSO_PTV_ID - Tipo de vínculo entre sujeto y objeto',
+        required: true,
+        orderIndex: 25,
+        help: 'Seleccione el tipo de vínculo según PAR_TIPOS_VINCULOS',
+        fieldConfig: JSON.stringify({
+          options: [
+            { id: 'PRO', label: 'Propietario' },
+            { id: 'USU', label: 'Usuario' },
+            { id: 'TEN', label: 'Tenedor' },
+            { id: 'CON', label: 'Conductor Habitual' },
+          ],
+        }),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
+      },
+      {
+        formId: 'vehicle-transfer',
+        name: 'fecha_inicio_vinculo',
+        type: 'date',
+        label: 'Fecha Inicio Vínculo',
+        description: 'VSO_FECHA_INICIO - Fecha de inicio del vínculo',
+        required: true,
+        orderIndex: 26,
+        defaultValue: 'today',
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
+      },
+      {
+        formId: 'vehicle-transfer',
+        name: 'es_responsable',
+        type: 'radio',
+        label: '¿Será Responsable Tributario?',
+        description:
+          'VSO_RESPONSABLE - Indica si el nuevo propietario será responsable del pago de impuestos',
+        required: true,
+        orderIndex: 27,
+        defaultValue: 'S',
+        help: "Marque 'Sí' si el nuevo propietario será responsable tributario",
+        fieldConfig: JSON.stringify({
+          options: [
+            { id: 'S', label: 'Sí' },
+            { id: 'N', label: 'No' },
+          ],
+        }),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
+      },
+      {
+        formId: 'vehicle-transfer',
+        name: 'usuario_alta',
+        type: 'text',
+        label: 'Usuario de Alta',
+        description: 'VSO_USUARIO_ALTA - Usuario que registra la transferencia',
+        readonly: true,
+        orderIndex: 28,
+        defaultValue: '{{ currentUser }}',
+        help: 'Se completa automáticamente con el usuario actual del sistema',
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
+      },
+      {
+        formId: 'vehicle-transfer',
+        name: 'fecha_alta_transferencia',
+        type: 'datetime',
+        label: 'Fecha y Hora de Alta',
+        description:
+          'VSO_FECHA_ALTA - Timestamp del registro de la transferencia',
+        readonly: true,
+        orderIndex: 29,
+        defaultValue: '{{ now }}',
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
+      },
+
+      // SECCIÓN: Datos de la Transferencia
+      {
+        formId: 'vehicle-transfer',
+        name: 'fecha_transferencia',
+        type: 'date',
+        label: 'Fecha de Transferencia',
+        description: 'TFA_FECHA - Fecha efectiva de la transferencia',
+        required: true,
+        orderIndex: 30,
+        defaultValue: 'today',
+        help: 'Fecha en que se efectúa la transferencia del vehículo',
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
+      },
+      {
+        formId: 'vehicle-transfer',
+        name: 'tipo_transferencia',
+        type: 'select',
+        label: 'Tipo de Transferencia',
+        description:
+          'P_TIPO_TRANSFERENCIA - Seleccione el motivo de la transferencia',
+        required: true,
+        orderIndex: 31,
+        defaultValue: 'C',
+        fieldConfig: JSON.stringify({
+          options: [
+            { id: 'C', label: 'Compraventa' },
+            { id: 'D', label: 'Donación' },
+            { id: 'H', label: 'Herencia' },
+            { id: 'S', label: 'Incorporación a Sociedad' },
+            { id: 'P', label: 'Permuta' },
+            { id: 'J', label: 'Adjudicación Judicial' },
+            { id: 'O', label: 'Otro' },
+          ],
+        }),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
+      },
+      {
+        formId: 'vehicle-transfer',
+        name: 'monto_operacion',
+        type: 'money',
+        label: 'Monto de la Operación',
+        description: 'TFA_MONTO - Valor de la operación (si aplica)',
+        placeholder: '0,00',
+        orderIndex: 32,
+        help: 'Ingrese el monto de la transacción si corresponde',
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
+      },
+      {
+        formId: 'vehicle-transfer',
+        name: 'moneda',
+        type: 'select',
+        label: 'Unidad Monetaria',
+        description: 'TFA_PMA_ID - Unidad monetaria de la operación',
+        orderIndex: 33,
+        defaultValue: 'ARS',
+        help: 'Seleccione la moneda según PAR_MONEDAS',
+        fieldConfig: JSON.stringify({
+          options: [
+            { id: 'ARS', label: 'Pesos Argentinos' },
+            { id: 'USD', label: 'Dólares Estadounidenses' },
+            { id: 'EUR', label: 'Euros' },
+          ],
+        }),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
+      },
+      {
+        formId: 'vehicle-transfer',
+        name: 'numero_transferencia',
+        type: 'number',
+        label: 'Número de Transferencia',
+        description: 'TFA_ID - Número de secuencia de la transferencia',
+        readonly: true,
+        orderIndex: 34,
+        help: 'Se asigna automáticamente usando TFA_SEQ.NEXTVAL',
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
+      },
+
+      // SECCIÓN: Documentación y Observaciones
+      {
+        formId: 'vehicle-transfer',
+        name: 'documentos_presentados',
+        type: 'multiselect',
+        label: 'Documentos Presentados',
+        description: 'Seleccione los documentos que respaldan la transferencia',
+        orderIndex: 35,
+        help: 'Seleccione todos los documentos presentados para la transferencia',
+        fieldConfig: JSON.stringify({
+          options: [
+            { id: 'titulo', label: 'Título del Vehículo' },
+            { id: 'cedula_verde', label: 'Cédula Verde' },
+            { id: 'cedula_azul', label: 'Cédula Azul' },
+            { id: 'dni_vendedor', label: 'DNI del Vendedor' },
+            { id: 'dni_comprador', label: 'DNI del Comprador' },
+            { id: 'formulario_08', label: 'Formulario 08' },
+            { id: 'libre_deuda', label: 'Certificado Libre de Deuda' },
+            { id: 'contrato_compraventa', label: 'Contrato de Compraventa' },
+            { id: 'poder_notarial', label: 'Poder Notarial (si aplica)' },
+            {
+              id: 'certificado_verificacion',
+              label: 'Certificado de Verificación Policial',
+            },
+          ],
+        }),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
+      },
+      {
+        formId: 'vehicle-transfer',
+        name: 'situacion_especial',
+        type: 'select',
+        label: 'Situación Especial',
+        description:
+          'Situación especial del vehículo (VSE - VINCULOS_SITUACION_ESPECIAL)',
+        orderIndex: 36,
+        defaultValue: 'NORMAL',
+        help: 'Indique si el vehículo tiene alguna situación especial registrada',
+        fieldConfig: JSON.stringify({
+          options: [
+            { id: 'NORMAL', label: 'Normal' },
+            { id: 'EMBARGO', label: 'Embargado' },
+            { id: 'INHIBICION', label: 'Inhibición' },
+            { id: 'PRENDA', label: 'Prenda' },
+            { id: 'SECUESTRO', label: 'Secuestro Judicial' },
+            { id: 'OTRO', label: 'Otra Situación' },
+          ],
+        }),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
+      },
+      {
+        formId: 'vehicle-transfer',
+        name: 'observaciones',
+        type: 'textarea',
+        label: 'Observaciones',
+        description:
+          'TFA_OBSERVACIONES - Información adicional relevante para la transferencia',
+        placeholder: 'Observaciones adicionales sobre la transferencia...',
+        orderIndex: 37,
+        help: 'Registre cualquier información adicional relevante para la transferencia',
+        fieldConfig: JSON.stringify({
+          maxLength: 500,
+        }),
+        validationConfig: JSON.stringify({}),
+        eventsConfig: JSON.stringify({}),
       },
     ];
 
-    for (const field of fields) {
-      await this.formFieldRepository.create(field);
+    for (const fieldData of fields) {
+      await this.formFieldRepository.create(fieldData);
     }
   }
 }

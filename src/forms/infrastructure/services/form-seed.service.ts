@@ -22,14 +22,18 @@ export class FormSeedService {
 
       // Formulario de Alta de Automotor
       await this.createVehicleRegistrationForm();
-      
+
       // Formulario de Transferencia de Automotor
       await this.createVehicleTransferForm();
 
       console.log('✅ Formularios insertados exitosamente');
       console.log('📋 Formularios disponibles:');
-      console.log('   - vehicle-registration: Alta de Automotor (POST /api/automotor/alta-modificacion)');
-      console.log('   - vehicle-transfer: Transferencia de Automotor (PUT /api/automotor/transferencia)');
+      console.log(
+        '   - vehicle-registration: Alta de Automotor (POST automotor/alta-modificacion)',
+      );
+      console.log(
+        '   - vehicle-transfer: Transferencia de Automotor (PUT automotor/transferencia)',
+      );
     } catch (error) {
       console.error('❌ Error al insertar formularios:', error);
     }
@@ -39,8 +43,10 @@ export class FormSeedService {
     const form = {
       id: 'vehicle-registration',
       title: 'Alta de Automotor',
-      subtitle: 'Sistema de registro de nuevos vehículos - Formulario AUFA0030_CBA',
-      description: 'AUFA0030_CBA - Registre un nuevo vehículo en el sistema tributario',
+      subtitle:
+        'Sistema de registro de nuevos vehículos - Formulario AUFA0030_CBA',
+      description:
+        'AUFA0030_CBA - Registre un nuevo vehículo en el sistema tributario',
       category: 'vehiculos',
       isActive: true,
       version: '1.0',
@@ -55,7 +61,7 @@ export class FormSeedService {
         gap: '16px',
         rowHeight: '85px',
       }),
-      submissionEndpoint: 'http://localhost:3000/api/automotor/alta-modificacion',
+      submissionEndpoint: 'http://localhost:3000automotor/alta-modificacion',
       submissionMethod: 'POST',
       submissionSchema: JSON.stringify({
         type: 'object',
@@ -70,7 +76,10 @@ export class FormSeedService {
               colorVehiculo: { source: 'color_vehiculo' },
               numeroMotor: { source: 'numero_motor' },
               numeroChasis: { source: 'numero_chasis' },
-              fechaPrimeraInscripcion: { source: 'fecha_primera_inscripcion', type: 'date' },
+              fechaPrimeraInscripcion: {
+                source: 'fecha_primera_inscripcion',
+                type: 'date',
+              },
               marcaRnpa: { source: 'marca_rnpa' },
               marcaDescripcion: { source: 'marca_descripcion' },
               tipoRnpa: { source: 'tipo_rnpa' },
@@ -86,8 +95,8 @@ export class FormSeedService {
               cantidadEjes: { source: 'cantidad_ejes', type: 'number' },
               cantidadRuedas: { source: 'cantidad_ruedas', type: 'number' },
               tara: { source: 'tara', type: 'number' },
-              pbt: { source: 'pbt', type: 'number' }
-            }
+              pbt: { source: 'pbt', type: 'number' },
+            },
           },
           registro: {
             type: 'object',
@@ -97,76 +106,124 @@ export class FormSeedService {
               codigoAlta: { source: 'codigo_alta' },
               codigoAltaDescripcion: { source: 'codigo_alta_descripcion' },
               numeroTitulo: { source: 'numero_titulo' },
-              fechaEmisionTitulo: { source: 'fecha_emision_titulo', type: 'date' },
+              fechaEmisionTitulo: {
+                source: 'fecha_emision_titulo',
+                type: 'date',
+              },
               observacionesTitulo: { source: 'observaciones_titulo' },
               usuarioAlta: { source: 'usuario_alta' },
-              fechaAltaVehiculo: { source: 'fecha_alta_vehiculo', type: 'datetime' },
-              observaciones: { source: 'observaciones' }
-            }
+              fechaAltaVehiculo: {
+                source: 'fecha_alta_vehiculo',
+                type: 'datetime',
+              },
+              observaciones: { source: 'observaciones' },
+            },
           },
           propietario: {
             type: 'object',
             mapping: {
               cuit: { source: 'cuit_propietario' },
               descripcion: { source: 'propietario_descripcion' },
-              porcentajePropiedad: { source: 'porcentaje_propiedad', type: 'number' },
+              porcentajePropiedad: {
+                source: 'porcentaje_propiedad',
+                type: 'number',
+              },
               tipoVinculo: { source: 'tipo_vinculo' },
-              fechaInicioVinculo: { source: 'fecha_inicio_vinculo', type: 'date' },
-              esResponsable: { source: 'es_responsable', type: 'boolean' }
-            }
+              fechaInicioVinculo: {
+                source: 'fecha_inicio_vinculo',
+                type: 'date',
+              },
+              esResponsable: { source: 'es_responsable', type: 'boolean' },
+            },
           },
           documentacion: {
             type: 'object',
             mapping: {
-              documentosPresentados: { source: 'documentos_presentados', type: 'array' },
-              verificacionPolicial: { source: 'verificacion_policial', type: 'boolean' }
-            }
-          }
-        }
+              documentosPresentados: {
+                source: 'documentos_presentados',
+                type: 'array',
+              },
+              verificacionPolicial: {
+                source: 'verificacion_policial',
+                type: 'boolean',
+              },
+            },
+          },
+        },
       }),
       sectionsConfig: JSON.stringify([
         {
           title: 'Datos Básicos del Vehículo',
           fields: [
-            'patente', 'tipo_vehiculo', 'anio_fabricacion', 'origen_rnpa',
-            'color_vehiculo', 'numero_motor', 'numero_chasis', 'fecha_primera_inscripcion'
-          ]
+            'patente',
+            'tipo_vehiculo',
+            'anio_fabricacion',
+            'origen_rnpa',
+            'color_vehiculo',
+            'numero_motor',
+            'numero_chasis',
+            'fecha_primera_inscripcion',
+          ],
         },
         {
           title: 'Información RNPA',
           fields: [
-            'marca_rnpa', 'marca_descripcion', 'tipo_rnpa', 'tipo_rnpa_descripcion',
-            'modelo_rnpa', 'modelo_descripcion', 'version_modelo', 'combustible'
-          ]
+            'marca_rnpa',
+            'marca_descripcion',
+            'tipo_rnpa',
+            'tipo_rnpa_descripcion',
+            'modelo_rnpa',
+            'modelo_descripcion',
+            'version_modelo',
+            'combustible',
+          ],
         },
         {
           title: 'Registro y Documentación',
           fields: [
-            'registro_automotor', 'registro_descripcion', 'codigo_alta', 'codigo_alta_descripcion',
-            'numero_titulo', 'fecha_emision_titulo', 'observaciones_titulo'
-          ]
+            'registro_automotor',
+            'registro_descripcion',
+            'codigo_alta',
+            'codigo_alta_descripcion',
+            'numero_titulo',
+            'fecha_emision_titulo',
+            'observaciones_titulo',
+          ],
         },
         {
           title: 'Propietario Inicial',
           fields: [
-            'cuit_propietario', 'propietario_descripcion', 'porcentaje_propiedad',
-            'tipo_vinculo', 'fecha_inicio_vinculo', 'es_responsable'
-          ]
+            'cuit_propietario',
+            'propietario_descripcion',
+            'porcentaje_propiedad',
+            'tipo_vinculo',
+            'fecha_inicio_vinculo',
+            'es_responsable',
+          ],
         },
         {
           title: 'Datos Técnicos',
           fields: [
-            'cilindrada', 'potencia', 'peso_vehiculo', 'capacidad_carga',
-            'cantidad_ejes', 'cantidad_ruedas', 'tara', 'pbt'
-          ]
+            'cilindrada',
+            'potencia',
+            'peso_vehiculo',
+            'capacidad_carga',
+            'cantidad_ejes',
+            'cantidad_ruedas',
+            'tara',
+            'pbt',
+          ],
         },
         {
           title: 'Documentación y Control',
           fields: [
-            'documentos_presentados', 'verificacion_policial', 'usuario_alta',
-            'fecha_alta_vehiculo', 'observaciones'
-          ]
-        }
+            'documentos_presentados',
+            'verificacion_policial',
+            'usuario_alta',
+            'fecha_alta_vehiculo',
+            'observaciones',
+          ],
+        },
       ]),
       validationsConfig: JSON.stringify({
         rules: [
@@ -174,26 +231,28 @@ export class FormSeedService {
             field: 'cuit_propietario',
             type: 'foreign_key',
             table: 'SUJETOS_PASIVOS',
-            message: 'El CUIT del propietario debe existir en el sistema'
+            message: 'El CUIT del propietario debe existir en el sistema',
           },
           {
             field: 'patente',
             type: 'unique',
             table: 'AUTOMOTORES',
-            message: 'Ya existe un vehículo registrado con esta patente'
+            message: 'Ya existe un vehículo registrado con esta patente',
           },
           {
             field: 'numero_motor',
             type: 'unique',
             table: 'AUTOMOTORES',
-            message: 'Ya existe un vehículo registrado con este número de motor'
+            message:
+              'Ya existe un vehículo registrado con este número de motor',
           },
           {
             field: 'numero_chasis',
             type: 'unique',
             table: 'AUTOMOTORES',
-            message: 'Ya existe un vehículo registrado con este número de chasis'
-          }
+            message:
+              'Ya existe un vehículo registrado con este número de chasis',
+          },
         ],
         constraints: [
           {
@@ -201,49 +260,50 @@ export class FormSeedService {
             field: 'anio_fabricacion',
             min: 1900,
             max: new Date().getFullYear() + 1,
-            message: 'El año de fabricación debe estar entre 1900 y el año siguiente al actual'
-          }
-        ]
+            message:
+              'El año de fabricación debe estar entre 1900 y el año siguiente al actual',
+          },
+        ],
       }),
       eventsConfig: JSON.stringify({
         onMarcaChange: {
           type: 'query',
           target: 'PAR_MARCAS_RNPA',
-          populate: ['marca_descripcion']
+          populate: ['marca_descripcion'],
         },
         onTipoChange: {
           type: 'query',
           target: 'PAR_TIPOS_RNPA',
-          populate: ['tipo_rnpa_descripcion']
+          populate: ['tipo_rnpa_descripcion'],
         },
         onModeloChange: {
           type: 'query',
           target: 'PAR_MODELOS_RNPA',
-          populate: ['modelo_descripcion']
+          populate: ['modelo_descripcion'],
         },
         onRegistroChange: {
           type: 'query',
           target: 'PAR_REGISTRO_AUTOMOTORES',
-          populate: ['registro_descripcion']
+          populate: ['registro_descripcion'],
         },
         onCodigoAltaChange: {
           type: 'query',
           target: 'PAR_CODIGOS_ALTAS',
-          populate: ['codigo_alta_descripcion']
+          populate: ['codigo_alta_descripcion'],
         },
         onCuitLookup: {
           type: 'query',
           target: 'SUJETOS_PASIVOS',
-          populate: ['propietario_descripcion']
+          populate: ['propietario_descripcion'],
         },
         onOrigenChange: {
           type: 'conditional_label',
           field: 'origen_rnpa',
           conditions: {
-            'N': { label: 'Nacional' },
-            'I': { label: 'Importado' }
-          }
-        }
+            N: { label: 'Nacional' },
+            I: { label: 'Importado' },
+          },
+        },
       }),
       createdAt: new Date('2024-01-15T10:00:00Z'),
       updatedAt: new Date('2025-07-15T10:00:00Z'),
@@ -256,8 +316,10 @@ export class FormSeedService {
     const form = {
       id: 'vehicle-transfer',
       title: 'Transferencia de Automotor',
-      subtitle: 'Sistema de consulta y transferencia de vehículos - Formulario AUFA0090_CBA - TAXIDESI',
-      description: 'TAXIDESI - Complete la información para registrar la transferencia del vehículo',
+      subtitle:
+        'Sistema de consulta y transferencia de vehículos - Formulario AUFA0090_CBA - TAXIDESI',
+      description:
+        'TAXIDESI - Complete la información para registrar la transferencia del vehículo',
       category: 'vehiculos',
       isActive: true,
       version: '1.0',
@@ -296,78 +358,123 @@ export class FormSeedService {
               marcaDescripcion: { source: 'marca_descripcion' },
               tipoRnpa: { source: 'tipo_rnpa' },
               tipoRnpaDescripcion: { source: 'tipo_rnpa_descripcion' },
-              modeloRnpaDescripcion: { source: 'modelo_rnpa_descripcion' }
-            }
+              modeloRnpaDescripcion: { source: 'modelo_rnpa_descripcion' },
+              archivoId: { source: 'archivo_id' },
+            },
           },
           transferencia: {
             type: 'object',
             mapping: {
               tipoTransferencia: { source: 'tipo_transferencia' },
-              fechaTransferencia: { source: 'fecha_transferencia', type: 'date' },
+              fechaTransferencia: {
+                source: 'fecha_transferencia',
+                type: 'date',
+              },
               montoOperacion: { source: 'monto_operacion', type: 'number' },
               moneda: { source: 'moneda' },
-              numeroTransferencia: { source: 'numero_transferencia' }
-            }
+              numeroTransferencia: { source: 'numero_transferencia' },
+            },
           },
           vendedor: {
             type: 'object',
             mapping: {
               cuit: { source: 'cuit_vendedor' },
-              descripcion: { source: 'vendedor_descripcion' }
-            }
+              descripcion: { source: 'vendedor_descripcion' },
+            },
           },
           comprador: {
             type: 'object',
             mapping: {
               cuit: { source: 'cuit_comprador' },
               descripcion: { source: 'comprador_descripcion' },
-              porcentajePropiedad: { source: 'porcentaje_propiedad', type: 'number' },
+              porcentajePropiedad: {
+                source: 'porcentaje_propiedad',
+                type: 'number',
+              },
               tipoVinculo: { source: 'tipo_vinculo' },
-              fechaInicioVinculo: { source: 'fecha_inicio_vinculo', type: 'date' },
-              esResponsable: { source: 'es_responsable', type: 'boolean' }
-            }
+              fechaInicioVinculo: {
+                source: 'fecha_inicio_vinculo',
+                type: 'date',
+              },
+              esResponsable: { source: 'es_responsable', type: 'boolean' },
+            },
           },
           documentacion: {
             type: 'object',
             mapping: {
-              documentosPresentados: { source: 'documentos_presentados', type: 'array' },
+              documentosPresentados: {
+                source: 'documentos_presentados',
+                type: 'array',
+              },
               situacionEspecial: { source: 'situacion_especial' },
-              observaciones: { source: 'observaciones' }
-            }
-          }
-        }
+              observaciones: { source: 'observaciones' },
+              usuarioAlta: { source: 'usuario_alta' },
+              fechaAltaTransferencia: {
+                source: 'fecha_alta_transferencia',
+                type: 'datetime',
+              },
+            },
+          },
+        },
       }),
       sectionsConfig: JSON.stringify([
         {
           title: 'Datos del Vehículo',
           fields: [
-            'patente', 'modelo_rnpa', 'modelo_descripcion', 'codigo_alta', 'codigo_alta_descripcion',
-            'registro_automotor', 'registro_descripcion', 'fecha_alta', 'fecha_inicio',
-            'fecha_fabricacion', 'fecha_rige', 'origen_rnpa', 'marca_rnpa', 'marca_descripcion',
-            'tipo_rnpa', 'tipo_rnpa_descripcion', 'modelo_rnpa_descripcion'
-          ]
-        },
-        {
-          title: 'Datos de la Transferencia',
-          fields: [
-            'tipo_transferencia', 'fecha_transferencia', 'monto_operacion',
-            'moneda', 'numero_transferencia'
-          ]
+            'patente',
+            'tipo_vehiculo',
+            'modelo_rnpa',
+            'modelo_descripcion',
+            'codigo_alta',
+            'codigo_alta_descripcion',
+            'registro_automotor',
+            'registro_descripcion',
+            'fecha_alta',
+            'fecha_inicio',
+            'fecha_fabricacion',
+            'fecha_rige',
+            'origen_rnpa',
+            'marca_rnpa',
+            'marca_descripcion',
+            'tipo_rnpa',
+            'tipo_rnpa_descripcion',
+            'modelo_rnpa_descripcion',
+            'archivo_id',
+          ],
         },
         {
           title: 'Propietarios',
           fields: [
-            'cuit_vendedor', 'vendedor_descripcion', 'cuit_comprador', 'comprador_descripcion',
-            'porcentaje_propiedad', 'tipo_vinculo', 'fecha_inicio_vinculo', 'es_responsable',
-            'usuario_alta', 'fecha_alta_transferencia'
-          ]
+            'cuit_vendedor',
+            'vendedor_descripcion',
+            'cuit_comprador',
+            'comprador_descripcion',
+            'porcentaje_propiedad',
+            'tipo_vinculo',
+            'fecha_inicio_vinculo',
+            'es_responsable',
+            'usuario_alta',
+            'fecha_alta_transferencia',
+          ],
+        },
+        {
+          title: 'Datos de la Transferencia',
+          fields: [
+            'fecha_transferencia',
+            'tipo_transferencia',
+            'monto_operacion',
+            'moneda',
+            'numero_transferencia',
+          ],
         },
         {
           title: 'Documentación y Observaciones',
           fields: [
-            'documentos_presentados', 'situacion_especial', 'observaciones'
-          ]
-        }
+            'documentos_presentados',
+            'situacion_especial',
+            'observaciones',
+          ],
+        },
       ]),
       validationsConfig: JSON.stringify({
         rules: [
@@ -375,63 +482,70 @@ export class FormSeedService {
             field: 'cuit_vendedor',
             type: 'foreign_key',
             table: 'SUJETOS_PASIVOS',
-            message: 'El CUIT del vendedor debe existir en el sistema'
+            message: 'El CUIT del vendedor debe existir en el sistema',
           },
           {
             field: 'cuit_comprador',
             type: 'foreign_key',
             table: 'SUJETOS_PASIVOS',
-            message: 'El CUIT del comprador debe existir en el sistema'
+            message: 'El CUIT del comprador debe existir en el sistema',
           },
           {
             field: 'patente',
             type: 'foreign_key',
             table: 'AUTOMOTORES',
-            message: 'La patente debe corresponder a un vehículo registrado y activo'
+            message:
+              'La patente debe corresponder a un vehículo registrado y activo',
           },
           {
             field: 'tipo_vinculo',
             type: 'foreign_key',
             table: 'PAR_TIPOS_VINCULOS',
-            message: 'Tipo de vínculo inválido'
-          }
+            message: 'Tipo de vínculo inválido',
+          },
         ],
         constraints: [
           {
             type: 'unique',
             fields: ['patente', 'cuit_comprador', 'fecha_transferencia'],
-            message: 'Ya existe una transferencia para este vehículo, comprador y fecha'
+            message:
+              'Ya existe una transferencia para este vehículo, comprador y fecha',
           },
           {
             type: 'date_range',
             field: 'fecha_transferencia',
             min: 'fecha_alta',
-            message: 'La fecha de transferencia no puede ser anterior a la fecha de alta del vehículo'
-          }
-        ]
+            message:
+              'La fecha de transferencia no puede ser anterior a la fecha de alta del vehículo',
+          },
+        ],
       }),
       eventsConfig: JSON.stringify({
         onPatenteLookup: {
           type: 'query',
           target: 'AUTOMOTORES',
           populate: [
-            'modelo_rnpa', 'modelo_descripcion', 'codigo_alta', 'registro_automotor',
-            'fecha_alta', 'origen_rnpa'
-          ]
+            'modelo_rnpa',
+            'modelo_descripcion',
+            'codigo_alta',
+            'registro_automotor',
+            'fecha_alta',
+            'origen_rnpa',
+          ],
         },
         onCuitLookup: {
           type: 'query',
           target: 'SUJETOS_PASIVOS',
-          populate: ['vendedor_descripcion', 'comprador_descripcion']
+          populate: ['vendedor_descripcion', 'comprador_descripcion'],
         },
         onOrigenChange: {
           type: 'conditional_label',
           field: 'origen_rnpa',
           conditions: {
-            'N': { marca_rnpa: 'Marca Nacional', tipo_rnpa: 'Tipo Nacional' },
-            'I': { marca_rnpa: 'Marca Importada', tipo_rnpa: 'Tipo Importado' }
-          }
-        }
+            N: { marca_rnpa: 'Marca Nacional', tipo_rnpa: 'Tipo Nacional' },
+            I: { marca_rnpa: 'Marca Importada', tipo_rnpa: 'Tipo Importado' },
+          },
+        },
       }),
       createdAt: new Date('2024-01-15T10:00:00Z'),
       updatedAt: new Date('2025-07-15T10:00:00Z'),

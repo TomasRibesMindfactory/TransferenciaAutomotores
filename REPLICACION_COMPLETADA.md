@@ -10,7 +10,7 @@ He replicado exitosamente todos los datos de los JSON de formularios que me prop
 - ✅ **Configuración básica**: Título, subtitle, descripción, categoría
 - ✅ **Botones**: Configuración completa con "Registrar Vehículo", "Cancelar", botón back
 - ✅ **Layout**: Configuración de 2 columnas, espaciado de 16px, altura 85px
-- ✅ **Endpoint de envío**: `http://localhost:3000/api/automotor/alta-modificacion` (POST)
+- ✅ **Endpoint de envío**: `http://localhost:3000automotor/alta-modificacion` (POST)
 - ✅ **Schema de transformación**: Mapeo completo para `vehiculo`, `registro`, `propietario`, `documentacion`
 - ✅ **Secciones**: 6 secciones organizadas (Datos Básicos, RNPA, Registro, Propietario, Técnicos, Documentación)
 - ✅ **Validaciones**: Reglas para CUIT, patentes únicas, números de motor/chasis únicos
@@ -20,7 +20,7 @@ He replicado exitosamente todos los datos de los JSON de formularios que me prop
 - ✅ **Configuración básica**: Título, subtitle "TAXIDESI", descripción, categoría
 - ✅ **Botones**: "Registrar Transferencia", "Cancelar", navegación back
 - ✅ **Layout**: Misma configuración de grid 2x2
-- ✅ **Endpoint de envío**: `http://localhost:3000/api/automotor/transferencia` (PUT)
+- ✅ **Endpoint de envío**: `http://localhost:3000automotor/transferencia` (PUT)
 - ✅ **Schema de transformación**: Mapeo para `vehiculo`, `transferencia`, `vendedor`, `comprador`, `documentacion`
 - ✅ **Secciones**: 4 secciones (Datos del Vehículo, Transferencia, Propietarios, Documentación)
 - ✅ **Validaciones**: Validaciones específicas para transferencias
