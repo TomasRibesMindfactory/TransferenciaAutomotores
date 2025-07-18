@@ -17,8 +17,8 @@ export class ObjetoValorPredeterminadoRepository
     automotorId: number,
   ): Promise<ObjetoValorPredeterminado[]> {
     return this.ovpRepository.find({
-      where: { automotorId },
-      order: { fechaVigencia: 'DESC' },
+      where: { atrId: automotorId },
+      order: { fechaInicio: 'DESC' },
     });
   }
 

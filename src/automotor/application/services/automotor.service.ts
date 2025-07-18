@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  Inject,
 } from '@nestjs/common';
 import { AutomotorRepositoryPort } from '../../domain/ports/automotor-repository.port';
 import { SujetoPasivoRepositoryPort } from '../../domain/ports/sujeto-pasivo-repository.port';
@@ -13,9 +14,13 @@ import { AltaAutomotorDto } from '../../infrastructure/dto/alta-automotor.dto';
 @Injectable()
 export class AutomotorService {
   constructor(
+    @Inject('AutomotorRepositoryPort')
     private readonly automotorRepository: AutomotorRepositoryPort,
+    @Inject('SujetoPasivoRepositoryPort')
     private readonly sujetoPasivoRepository: SujetoPasivoRepositoryPort,
+    @Inject('VinculoSujetoObjetoRepositoryPort')
     private readonly vinculoRepository: VinculoSujetoObjetoRepositoryPort,
+    @Inject('ObjetoValorPredeterminadoRepositoryPort')
     private readonly ovpRepository: ObjetoValorPredeterminadoRepositoryPort,
   ) {}
 
@@ -37,13 +42,14 @@ export class AutomotorService {
     const objetoVigente = objetosValor[0]; // El más reciente
 
     return {
-      modelo: automotor.modelo,
-      codigoAlta: automotor.codigoAlta,
-      registroId: automotor.registroId,
-      marca: automotor.marca,
+      dominio: automotor.dominio,
+      fechaInicio: automotor.fechaInicio,
+      fechaFabricacion: automotor.fechaFabricacion,
+      pthId: automotor.pthId,
       fechaAlta: automotor.fechaAlta,
-      fechaVigencia: objetoVigente?.fechaVigencia || null,
-      valorVigente: objetoVigente?.valor || null,
+      numeroChasis: automotor.numeroChasis || null,
+      numeroMotor: automotor.numeroMotor || null,
+      color: automotor.color || null,
     };
   }
 
@@ -61,7 +67,7 @@ export class AutomotorService {
 
     return {
       cuit: vinculo.sujetoPasivo.cuit,
-      razonSocial: vinculo.sujetoPasivo.razonSocial,
+      denominacion: vinculo.sujetoPasivo.denominacion,
       porcentaje: vinculo.porcentaje,
       responsable: vinculo.responsable === 'S' ? 'Sí' : 'No',
     };
@@ -112,11 +118,14 @@ export class AutomotorService {
     const nuevoVinculo = await this.vinculoRepository.create({
       sujetoPasivoId: nuevoTitular.id,
       objetoValorPredeterminadoId: ovpId,
+      ptvId: 'PROP', // Tipo de vínculo por defecto
       fechaInicio: fechaInicio,
-      fechaHasta: null,
+      fechaFin: null,
       fechaBaja: null,
       porcentaje: transferenciaDto.porcentaje,
       responsable: transferenciaDto.responsable ? 'S' : 'N',
+      usuarioAlta: 'SYSTEM',
+      fechaAlta: new Date(),
     });
 
     return {
@@ -125,7 +134,7 @@ export class AutomotorService {
         id: nuevoVinculo.id,
         nuevoTitular: {
           cuit: nuevoTitular.cuit,
-          razonSocial: nuevoTitular.razonSocial,
+          denominacion: nuevoTitular.denominacion,
         },
         fechaInicio: nuevoVinculo.fechaInicio,
         porcentaje: nuevoVinculo.porcentaje,
@@ -158,32 +167,40 @@ export class AutomotorService {
       if (!automotor) {
         // Crear nuevo automotor
         automotor = await this.automotorRepository.create({
-          modelo: altaDto.vehiculo?.modelo || 'Sin especificar',
-          codigoAlta: Math.floor(Date.now() / 1000), // Timestamp en segundos
-          registroId:
-            parseInt(altaDto.ovpId.replace(/\D/g, ''), 10) ||
-            Math.floor(Math.random() * 1000000),
           dominio: altaDto.ovpId,
-          marca: altaDto.vehiculo?.marca || 'Sin especificar',
+          fechaInicio: new Date(),
+          fechaFabricacion: new Date().getFullYear(),
+          fechaRige: new Date(),
+          pcaPtaId: '001',
+          pcaId: '001',
+          pthId: 'AUTO',
+          usuarioAlta: 'SYSTEM',
           fechaAlta: new Date(),
         });
       }
 
       // Crear el objeto valor predeterminado
       const objetoValor = await this.ovpRepository.create({
-        automotorId: automotor.id,
-        fechaVigencia: new Date(),
-        valor: altaDto.vehiculo?.valor || 0,
+        atrId: automotor.id,
+        fechaInicio: new Date(),
+        tipo: 'A',
+        atrDominio: automotor.dominio,
+        atrPthId: automotor.pthId,
+        usuarioAlta: 'SYSTEM',
+        fechaAlta: new Date(),
       });
 
       // Crear vínculo inicial con el propietario
       const vinculoInicial = await this.vinculoRepository.create({
         sujetoPasivoId: propietario.id,
         objetoValorPredeterminadoId: objetoValor.id,
+        ptvId: 'PROP',
         fechaInicio: new Date(),
-        fechaHasta: null,
+        fechaFin: null,
         porcentaje: altaDto.propietario.porcentajePropiedad || 100,
         responsable: altaDto.propietario.esResponsable ? 'S' : 'N',
+        usuarioAlta: 'SYSTEM',
+        fechaAlta: new Date(),
       });
 
       return {
@@ -193,7 +210,7 @@ export class AutomotorService {
           patente: automotor.dominio,
           propietario: {
             cuit: propietario.cuit,
-            razonSocial: propietario.razonSocial,
+            denominacion: propietario.denominacion,
           },
           fechaAlta: automotor.fechaAlta,
           porcentaje: vinculoInicial.porcentaje,

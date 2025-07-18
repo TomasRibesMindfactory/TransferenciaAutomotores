@@ -17,7 +17,7 @@ export class VinculoSujetoObjetoRepository
     return this.vinculoRepository.findOne({
       where: {
         objetoValorPredeterminadoId: ovpId,
-        fechaHasta: null,
+        fechaFin: null,
         fechaBaja: null,
       },
       relations: ['sujetoPasivo'],
@@ -31,7 +31,7 @@ export class VinculoSujetoObjetoRepository
     return this.vinculoRepository.save(nuevoVinculo);
   }
 
-  async updateFechaHasta(id: number, fechaHasta: Date): Promise<void> {
-    await this.vinculoRepository.update(id, { fechaHasta });
+  async updateFechaHasta(id: number, fechaFin: Date): Promise<void> {
+    await this.vinculoRepository.update(id, { fechaFin });
   }
 }
