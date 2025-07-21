@@ -36,11 +36,6 @@ export class AutomotorService {
       );
     }
 
-    const objetosValor = await this.ovpRepository.findByAutomotorId(
-      automotor.id,
-    );
-    const objetoVigente = objetosValor[0]; // El más reciente
-
     return {
       dominio: automotor.dominio,
       fechaInicio: automotor.fechaInicio,

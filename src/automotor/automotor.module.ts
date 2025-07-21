@@ -2,8 +2,11 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AutomotorController } from './infrastructure/controllers/automotor.controller';
 import { TransferenciaController } from './infrastructure/controllers/transferencia.controller';
+import { ValidationsController } from './infrastructure/controllers/validations.controller';
+import { FormsValidationController } from './infrastructure/controllers/forms-validation.controller';
 import { AutomotorService } from './application/services/automotor.service';
 import { TransferenciaService } from './application/services/transferencia.service';
+import { ValidationsService } from './application/services/validations.service';
 import { FormsModule } from '../forms/forms.module';
 
 // Implementaciones (adaptadores)
@@ -50,10 +53,16 @@ import { Usuario } from './infrastructure/entities/usuario.entity';
     ]),
     FormsModule,
   ],
-  controllers: [AutomotorController, TransferenciaController],
+  controllers: [
+    AutomotorController,
+    TransferenciaController,
+    ValidationsController,
+    FormsValidationController,
+  ],
   providers: [
     AutomotorService,
     TransferenciaService,
+    ValidationsService,
     SeedService,
 
     // Asociación de interfaces con sus implementaciones

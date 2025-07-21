@@ -152,7 +152,7 @@ export class SeedService implements OnModuleInit {
 
   private async seedParametricData() {
     const manager = this.parTipoVehiculoRepository.manager;
-    
+
     try {
       // Tipos de vehículo usando SQL directo
       await manager.query(`

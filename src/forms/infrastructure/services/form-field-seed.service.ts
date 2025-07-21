@@ -49,7 +49,7 @@ export class FormFieldSeedService {
         eventsConfig: JSON.stringify({
           onValidation: {
             action: 'both',
-            endpoint: 'automotor/consultar',
+            endpoint: 'validations/dominio',
             fields: {
               modelo_descripcion: 'modelo',
               codigo_alta: 'codigoAlta',
