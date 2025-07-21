@@ -51,15 +51,15 @@ export class FormFieldSeedService {
             action: 'both',
             endpoint: 'validations/dominio',
             fields: {
-              modelo_descripcion: 'modelo',
-              codigo_alta: 'codigoAlta',
-              codigo_alta_descripcion: 'codigoAltaDescripcion',
-              registro_automotor: 'registroId',
-              registro_descripcion: 'registroDescripcion',
-              fecha_alta_vehiculo: 'fechaAlta',
-              fecha_inicio_vigencia: 'fechaVigencia',
-              anio_fabricacion: 'anioFabricacion',
-              marca_descripcion: 'marca',
+              modelo_descripcion: 'pmoDescripcion',
+              codigo_alta: 'atrPcaId',
+              codigo_alta_descripcion: 'pcaDescripcion',
+              registro_automotor: 'atrPrtId',
+              registro_descripcion: 'prtDescripcion',
+              fecha_alta_vehiculo: 'atrFechaAlta',
+              fecha_inicio_vigencia: 'atrFechaInicio',
+              anio_fabricacion: 'atrFechaFabricacion',
+              marca_descripcion: 'marcaDescripcion',
               tipo_rnpa_descripcion: 'tipoDescripcion',
               valor_vehiculo: 'valorVigente',
             },
@@ -214,17 +214,14 @@ export class FormFieldSeedService {
         eventsConfig: JSON.stringify({
           onValidation: {
             action: 'both',
-            endpoint: 'forms/autocomplete',
+            endpoint: 'validations/modelo-rnpa',
             requestBody: {
-              endpoint: 'PAR_MARCAS_RNPA',
               value: '{{ field_value }}',
-              context: {
-                table: 'par_marcas_rnpa',
-                searchField: 'codigo_marca',
-              },
+              marca_id: '{{ marca_rnpa }}',
+              tipo_id: '{{ tipo_rnpa }}',
             },
             fields: {
-              marca_descripcion: 'descripcion',
+              marca_descripcion: 'marcaDescripcion',
             },
             debounceTime: 500,
           },
@@ -259,17 +256,13 @@ export class FormFieldSeedService {
         eventsConfig: JSON.stringify({
           onValidation: {
             action: 'both',
-            endpoint: 'forms/autocomplete',
+            endpoint: 'validations/modelo-rnpa',
             requestBody: {
-              endpoint: 'PAR_TIPOS_RNPA',
               value: '{{ field_value }}',
-              context: {
-                table: 'par_tipos_rnpa',
-                searchField: 'codigo_tipo',
-              },
+              marca_id: '{{ marca_rnpa }}',
             },
             fields: {
-              tipo_rnpa_descripcion: 'descripcion',
+              tipo_rnpa_descripcion: 'tipoDescripcion',
             },
             debounceTime: 500,
           },
@@ -303,21 +296,14 @@ export class FormFieldSeedService {
         eventsConfig: JSON.stringify({
           onValidation: {
             action: 'both',
-            endpoint: 'forms/autocomplete',
+            endpoint: 'validations/modelo-rnpa',
             requestBody: {
-              endpoint: 'PAR_MODELOS_RNPA',
               value: '{{ field_value }}',
-              context: {
-                table: 'par_modelos_rnpa',
-                searchField: 'codigo_modelo',
-                filterBy: {
-                  marca_id: '{{ marca_rnpa }}',
-                  tipo_id: '{{ tipo_rnpa }}',
-                },
-              },
+              marca_id: '{{ marca_rnpa }}',
+              tipo_id: '{{ tipo_rnpa }}',
             },
             fields: {
-              modelo_descripcion: 'descripcion',
+              modelo_descripcion: 'modeloDescripcion',
             },
             debounceTime: 500,
           },
@@ -394,17 +380,12 @@ export class FormFieldSeedService {
         eventsConfig: JSON.stringify({
           onChange: {
             action: 'populate',
-            endpoint: 'forms/autocomplete',
+            endpoint: 'validations/registro-automotor',
             requestBody: {
-              endpoint: 'PAR_REGISTRO_AUTOMOTORES',
               value: '{{ field_value }}',
-              context: {
-                table: 'par_registro_automotores',
-                searchField: 'codigo_registro',
-              },
             },
             fields: {
-              registro_descripcion: 'descripcion',
+              registro_descripcion: 'prtDescripcion',
             },
           },
         }),
@@ -444,17 +425,12 @@ export class FormFieldSeedService {
         eventsConfig: JSON.stringify({
           onChange: {
             action: 'populate',
-            endpoint: 'forms/autocomplete',
+            endpoint: 'validations/codigo-alta',
             requestBody: {
-              endpoint: 'PAR_CODIGOS_ALTAS',
               value: '{{ field_value }}',
-              context: {
-                table: 'par_codigos_altas',
-                searchField: 'codigo_alta',
-              },
             },
             fields: {
-              codigo_alta_descripcion: 'descripcion',
+              codigo_alta_descripcion: 'pcaDescripcion',
             },
           },
         }),
@@ -530,14 +506,9 @@ export class FormFieldSeedService {
         eventsConfig: JSON.stringify({
           onValidation: {
             action: 'both',
-            endpoint: 'forms/autocomplete',
-            requestBody: {
-              endpoint: 'SUJETOS_PASIVOS',
-              value: '{{ field_value }}',
-              context: { table: 'sujetos_pasivos', searchField: 'cuit' },
-            },
+            endpoint: 'validations/cuit',
             fields: {
-              propietario_descripcion: 'razonSocial',
+              propietario_descripcion: 'spoDenominacion',
               tipo_documento: 'tipoDocumento',
               domicilio_fiscal: 'domicilioFiscal',
             },
@@ -868,20 +839,20 @@ export class FormFieldSeedService {
         eventsConfig: JSON.stringify({
           onValidation: {
             action: 'both',
-            endpoint: 'automotor/consultar',
+            endpoint: 'validations/dominio',
             fields: {
-              modelo_rnpa: 'modelo_codigo',
-              modelo_descripcion: 'modelo_descripcion',
-              codigo_alta: 'codigo_alta',
-              codigo_alta_descripcion: 'codigo_alta_desc',
-              registro_automotor: 'registro_codigo',
-              registro_descripcion: 'registro_desc',
-              fecha_alta: 'fecha_alta_vehiculo',
-              fecha_inicio: 'fecha_inicio_vigencia',
-              fecha_fabricacion: 'anio_fabricacion',
-              fecha_rige: 'fecha_rige_vigencia',
-              origen_rnpa: 'origen',
-              archivo_id: 'vehiculo_id',
+              modelo_rnpa: 'atrPmoId',
+              modelo_descripcion: 'pmoDescripcion',
+              codigo_alta: 'atrPcaId',
+              codigo_alta_descripcion: 'pcaDescripcion',
+              registro_automotor: 'atrPrtId',
+              registro_descripcion: 'prtDescripcion',
+              fecha_alta: 'atrFechaAlta',
+              fecha_inicio: 'atrFechaInicio',
+              fecha_fabricacion: 'atrFechaFabricacion',
+              fecha_rige: 'atrFechaRige',
+              origen_rnpa: 'atrOrigenRnpa',
+              archivo_id: 'atrId',
             },
             debounceTime: 800,
           },
@@ -1135,9 +1106,9 @@ export class FormFieldSeedService {
         eventsConfig: JSON.stringify({
           onValidation: {
             action: 'both',
-            endpoint: 'contribuyente',
+            endpoint: 'validations/cuit',
             fields: {
-              vendedor_descripcion: 'nombre_completo',
+              vendedor_descripcion: 'spoDenominacion',
             },
             debounceTime: 600,
           },
@@ -1172,9 +1143,9 @@ export class FormFieldSeedService {
         eventsConfig: JSON.stringify({
           onValidation: {
             action: 'both',
-            endpoint: 'contribuyente',
+            endpoint: 'validations/cuit',
             fields: {
-              comprador_descripcion: 'nombre_completo',
+              comprador_descripcion: 'spoDenominacion',
             },
             debounceTime: 600,
           },

@@ -12,9 +12,9 @@ import { Automotor } from '../../infrastructure/entities/automotor.entity';
 import { ObjetoValorPredeterminado } from '../../infrastructure/entities/objeto-valor-predeterminado.entity';
 
 export interface ValidationResult {
-  isValid: boolean;
+  success: boolean;
   data?: any;
-  error?: string;
+  message?: string;
 }
 
 export interface DominioValidationResult extends ValidationResult {
@@ -38,12 +38,12 @@ export interface DominioValidationResult extends ValidationResult {
     atrOrigenRnpa?: string;
 
     // Descripciones auto-rellenadas
-    lDescripcionMarca?: string;
-    lDescripcionTipo?: string;
-    lDescripcionModelo?: string;
-    lPmoPmoDescripcion?: string;
-    lPcaPcaDescripcion?: string;
-    lPrtPrtDescripcion?: string;
+    pmoDescripcion?: string;
+    pcaDescripcion?: string;
+    prtDescripcion?: string;
+    marcaDescripcion?: string;
+    tipoDescripcion?: string;
+    modeloDescripcion?: string;
     municipioDesc?: string;
 
     // ID del objeto valor predeterminado
@@ -105,8 +105,8 @@ export class ValidationsService {
 
       if (!automotor) {
         return {
-          isValid: false,
-          error: `Dominio ${dominio} no encontrado o no está activo`,
+          success: false,
+          message: `Dominio ${dominio} no encontrado o no está activo`,
         };
       }
 
@@ -132,7 +132,8 @@ export class ValidationsService {
         ]);
 
       return {
-        isValid: true,
+        success: true,
+        message: 'Dominio válido',
         data: {
           // Datos básicos del automotor
           atrId: automotor.id,
@@ -153,12 +154,12 @@ export class ValidationsService {
           atrOrigenRnpa: automotor.origenRnpa,
 
           // Descripciones auto-rellenadas
-          lDescripcionMarca: automotor.idMarcaRnpa, // TODO: Obtener de tabla de marcas
-          lDescripcionTipo: tipoVehiculo?.descripcion,
-          lDescripcionModelo: modelo?.descripcion,
-          lPmoPmoDescripcion: modelo?.descripcion,
-          lPcaPcaDescripcion: codigoAlta?.descripcion,
-          lPrtPrtDescripcion: registroAutomotor?.descripcion,
+          marcaDescripcion: automotor.idMarcaRnpa, // TODO: Obtener de tabla de marcas
+          tipoDescripcion: tipoVehiculo?.descripcion,
+          modeloDescripcion: modelo?.descripcion,
+          pmoDescripcion: modelo?.descripcion,
+          pcaDescripcion: codigoAlta?.descripcion,
+          prtDescripcion: registroAutomotor?.descripcion,
           municipioDesc: '', // TODO: Implementar vínculo con municipios
 
           // ID del objeto valor predeterminado
@@ -167,8 +168,8 @@ export class ValidationsService {
       };
     } catch (error) {
       return {
-        isValid: false,
-        error: `Error al validar dominio: ${error.message}`,
+        success: false,
+        message: `Error al validar dominio: ${error.message}`,
       };
     }
   }
@@ -183,13 +184,14 @@ export class ValidationsService {
 
       if (!sujetoPasivo) {
         return {
-          isValid: false,
-          error: `CUIT ${cuit} no encontrado`,
+          success: false,
+          message: `CUIT ${cuit} no encontrado`,
         };
       }
 
       return {
-        isValid: true,
+        success: true,
+        message: 'CUIT válido',
         data: {
           spoId: sujetoPasivo.id,
           spoDenominacion: sujetoPasivo.denominacion,
@@ -198,8 +200,8 @@ export class ValidationsService {
       };
     } catch (error) {
       return {
-        isValid: false,
-        error: `Error al validar CUIT: ${error.message}`,
+        success: false,
+        message: `Error al validar CUIT: ${error.message}`,
       };
     }
   }
@@ -224,21 +226,22 @@ export class ValidationsService {
 
       if (!codigoAlta) {
         return {
-          isValid: false,
-          error: `Código de alta ${pcaId} no encontrado`,
+          success: false,
+          message: `Código de alta ${pcaId} no encontrado`,
         };
       }
 
       return {
-        isValid: true,
+        success: true,
+        message: 'Código de alta válido',
         data: {
           descripcion: codigoAlta.descripcion,
         },
       };
     } catch (error) {
       return {
-        isValid: false,
-        error: `Error al validar código de alta: ${error.message}`,
+        success: false,
+        message: `Error al validar código de alta: ${error.message}`,
       };
     }
   }
@@ -257,21 +260,22 @@ export class ValidationsService {
 
       if (!registro) {
         return {
-          isValid: false,
-          error: `Registro automotor ${prtId} no encontrado`,
+          success: false,
+          message: `Registro automotor ${prtId} no encontrado`,
         };
       }
 
       return {
-        isValid: true,
+        success: true,
+        message: 'Registro automotor válido',
         data: {
           descripcion: registro.descripcion,
         },
       };
     } catch (error) {
       return {
-        isValid: false,
-        error: `Error al validar registro automotor: ${error.message}`,
+        success: false,
+        message: `Error al validar registro automotor: ${error.message}`,
       };
     }
   }
@@ -288,21 +292,22 @@ export class ValidationsService {
 
       if (!tipoVehiculo) {
         return {
-          isValid: false,
-          error: `Tipo de vehículo ${pthId} no encontrado`,
+          success: false,
+          message: `Tipo de vehículo ${pthId} no encontrado`,
         };
       }
 
       return {
-        isValid: true,
+        success: true,
+        message: 'Tipo de vehículo válido',
         data: {
           descripcion: tipoVehiculo.descripcion,
         },
       };
     } catch (error) {
       return {
-        isValid: false,
-        error: `Error al validar tipo de vehículo: ${error.message}`,
+        success: false,
+        message: `Error al validar tipo de vehículo: ${error.message}`,
       };
     }
   }
@@ -319,21 +324,22 @@ export class ValidationsService {
 
       if (!modelo) {
         return {
-          isValid: false,
-          error: `Modelo RNPA ${pmoId} no encontrado`,
+          success: false,
+          message: `Modelo RNPA ${pmoId} no encontrado`,
         };
       }
 
       return {
-        isValid: true,
+        success: true,
+        message: 'Modelo RNPA válido',
         data: {
           descripcion: modelo.descripcion,
         },
       };
     } catch (error) {
       return {
-        isValid: false,
-        error: `Error al validar modelo RNPA: ${error.message}`,
+        success: false,
+        message: `Error al validar modelo RNPA: ${error.message}`,
       };
     }
   }
@@ -350,21 +356,22 @@ export class ValidationsService {
 
       if (!moneda) {
         return {
-          isValid: false,
-          error: `Moneda ${pmaId} no encontrada`,
+          success: false,
+          message: `Moneda ${pmaId} no encontrada`,
         };
       }
 
       return {
-        isValid: true,
+        success: true,
+        message: 'Moneda válida',
         data: {
           descripcion: moneda.descripcion,
         },
       };
     } catch (error) {
       return {
-        isValid: false,
-        error: `Error al validar moneda: ${error.message}`,
+        success: false,
+        message: `Error al validar moneda: ${error.message}`,
       };
     }
   }

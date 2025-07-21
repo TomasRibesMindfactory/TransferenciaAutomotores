@@ -25,7 +25,8 @@ export class ValidationsController {
     schema: {
       type: 'object',
       properties: {
-        isValid: { type: 'boolean', example: true },
+        success: { type: 'boolean', example: true },
+        message: { type: 'string', example: 'Dominio válido' },
         data: {
           type: 'object',
           properties: {
@@ -48,15 +49,15 @@ export class ValidationsController {
             atrIdTipoRnpa: { type: 'string', example: 'SED' },
             atrIdModeloRnpa: { type: 'string', example: 'GOL' },
             atrOrigenRnpa: { type: 'string', example: 'NAC' },
-            lDescripcionMarca: { type: 'string', example: 'Volkswagen' },
-            lDescripcionTipo: { type: 'string', example: 'Automóvil' },
-            lDescripcionModelo: { type: 'string', example: 'Gol Trend' },
-            lPmoPmoDescripcion: { type: 'string', example: 'Gol Trend' },
-            lPcaPcaDescripcion: {
+            marcaDescripcion: { type: 'string', example: 'Volkswagen' },
+            tipoDescripcion: { type: 'string', example: 'Automóvil' },
+            modeloDescripcion: { type: 'string', example: 'Gol Trend' },
+            pmoDescripcion: { type: 'string', example: 'Gol Trend' },
+            pcaDescripcion: {
               type: 'string',
               example: 'Primera Inscripción',
             },
-            lPrtPrtDescripcion: { type: 'string', example: 'Registro Córdoba' },
+            prtDescripcion: { type: 'string', example: 'Registro Córdoba' },
             municipioDesc: { type: 'string', example: 'Córdoba Capital' },
             ovpId: { type: 'number', example: 1 },
           },
@@ -70,8 +71,8 @@ export class ValidationsController {
     schema: {
       type: 'object',
       properties: {
-        isValid: { type: 'boolean', example: false },
-        error: {
+        success: { type: 'boolean', example: false },
+        message: {
           type: 'string',
           example: 'Dominio AA123BB no encontrado o no está activo',
         },
@@ -104,7 +105,8 @@ export class ValidationsController {
     schema: {
       type: 'object',
       properties: {
-        isValid: { type: 'boolean', example: true },
+        success: { type: 'boolean', example: true },
+        message: { type: 'string', example: 'CUIT válido' },
         data: {
           type: 'object',
           properties: {
@@ -126,8 +128,8 @@ export class ValidationsController {
     schema: {
       type: 'object',
       properties: {
-        isValid: { type: 'boolean', example: false },
-        error: { type: 'string', example: 'CUIT 20-12345678-9 no encontrado' },
+        success: { type: 'boolean', example: false },
+        message: { type: 'string', example: 'CUIT 20-12345678-9 no encontrado' },
       },
     },
   })
