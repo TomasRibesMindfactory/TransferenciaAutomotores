@@ -9,6 +9,7 @@ import { SujetoPasivoRepositoryPort } from '../../domain/ports/sujeto-pasivo-rep
 import { VinculoSujetoObjetoRepositoryPort } from '../../domain/ports/vinculo-sujeto-objeto-repository.port';
 import { ObjetoValorPredeterminadoRepositoryPort } from '../../domain/ports/objeto-valor-predeterminado-repository.port';
 import { TransferenciaAutomotorDto } from '../../infrastructure/dto/transferencia-automotor.dto';
+import { TransferenciaFormularioDto } from '../../infrastructure/dto/transferencia-formulario.dto';
 import { AltaAutomotorDto } from '../../infrastructure/dto/alta-automotor.dto';
 
 @Injectable()
@@ -66,6 +67,127 @@ export class AutomotorService {
       porcentaje: vinculo.porcentaje,
       responsable: vinculo.responsable === 'S' ? 'Sí' : 'No',
     };
+  }
+
+  /**
+   * Registra una transferencia de automotor usando datos del formulario
+   */
+  async registrarTransferenciaFormulario(
+    transferenciaFormularioDto: TransferenciaFormularioDto,
+  ) {
+    const { vehiculo, vendedor, comprador, transferencia, documentacion } =
+      transferenciaFormularioDto;
+
+    try {
+      // Validar que el vendedor existe
+      const vendedorEntity = await this.sujetoPasivoRepository.findByCuit(
+        vendedor.cuit,
+      );
+      if (!vendedorEntity) {
+        throw new BadRequestException(
+          `El vendedor con CUIT ${vendedor.cuit} no existe en el sistema`,
+        );
+      }
+
+      // Validar que el comprador existe
+      const compradorEntity = await this.sujetoPasivoRepository.findByCuit(
+        comprador.cuit,
+      );
+      if (!compradorEntity) {
+        throw new BadRequestException(
+          `El comprador con CUIT ${comprador.cuit} no existe en el sistema`,
+        );
+      }
+
+      // Buscar el objeto valor predeterminado por el archivoId
+      const ovp = await this.ovpRepository.findById(vehiculo.archivoId);
+      if (!ovp) {
+        throw new NotFoundException(
+          `Vehículo con ID ${vehiculo.archivoId} no encontrado`,
+        );
+      }
+
+      // Validar que el vendedor es el titular actual
+      const titularActual = await this.vinculoRepository.findTitularActual(
+        vehiculo.archivoId,
+      );
+      if (!titularActual || titularActual.sujetoPasivo.cuit !== vendedor.cuit) {
+        throw new BadRequestException(
+          `El vendedor ${vendedor.cuit} no es el titular actual del vehículo`,
+        );
+      }
+
+      // Calcular fecha de fin del vínculo anterior (un día antes de la nueva fecha de inicio)
+      const fechaInicio = new Date(comprador.fechaInicioVinculo);
+      const fechaFinAnterior = new Date(fechaInicio);
+      fechaFinAnterior.setDate(fechaFinAnterior.getDate() - 1);
+
+      // Cerrar el vínculo anterior
+      await this.vinculoRepository.updateFechaHasta(
+        titularActual.id,
+        fechaFinAnterior,
+      );
+
+      // Crear el nuevo vínculo con el comprador
+      const nuevoVinculo = await this.vinculoRepository.create({
+        sujetoPasivoId: compradorEntity.id,
+        objetoValorPredeterminadoId: vehiculo.archivoId,
+        ptvId: comprador.tipoVinculo,
+        fechaInicio: fechaInicio,
+        fechaFin: null,
+        fechaBaja: null,
+        porcentaje: comprador.porcentajePropiedad,
+        responsable: comprador.esResponsable ? 'S' : 'N',
+        usuarioAlta: documentacion.usuarioAlta,
+        fechaAlta: new Date(documentacion.fechaAltaTransferencia),
+      });
+
+      return {
+        success: true,
+        message: 'Transferencia registrada correctamente',
+        data: {
+          transferenciaId: nuevoVinculo.id,
+          vehiculo: {
+            dominio: vehiculo.dominio,
+            archivoId: vehiculo.archivoId,
+          },
+          vendedor: {
+            cuit: vendedorEntity.cuit,
+            denominacion: vendedorEntity.denominacion,
+            fechaFinVinculo: fechaFinAnterior,
+          },
+          comprador: {
+            cuit: compradorEntity.cuit,
+            denominacion: compradorEntity.denominacion,
+            fechaInicioVinculo: nuevoVinculo.fechaInicio,
+            porcentajePropiedad: nuevoVinculo.porcentaje,
+            tipoVinculo: nuevoVinculo.ptvId,
+            esResponsable: nuevoVinculo.responsable === 'S',
+          },
+          transferencia: {
+            tipo: transferencia.tipoTransferencia,
+            monto: transferencia.montoOperacion,
+            moneda: transferencia.moneda,
+          },
+          documentacion: {
+            documentosPresentados: documentacion.documentosPresentados,
+            situacionEspecial: documentacion.situacionEspecial,
+            usuarioAlta: documentacion.usuarioAlta,
+            fechaAlta: nuevoVinculo.fechaAlta,
+          },
+        },
+      };
+    } catch (error) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException
+      ) {
+        throw error;
+      }
+      throw new BadRequestException(
+        `Error al registrar transferencia: ${error.message}`,
+      );
+    }
   }
 
   /**

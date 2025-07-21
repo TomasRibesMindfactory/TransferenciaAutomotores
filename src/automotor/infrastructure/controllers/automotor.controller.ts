@@ -9,6 +9,7 @@ import {
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { AutomotorService } from '../../application/services/automotor.service';
 import { TransferenciaAutomotorDto } from '../dto/transferencia-automotor.dto';
+import { TransferenciaFormularioDto } from '../dto/transferencia-formulario.dto';
 import { AltaAutomotorDto } from '../dto/alta-automotor.dto';
 
 @ApiTags('automotor')
@@ -125,6 +126,80 @@ export class AutomotorController {
     return this.automotorService.registrarTransferencia(
       ovpId,
       transferenciaDto,
+    );
+  }
+
+  @Post('transferencia-formulario')
+  @ApiOperation({
+    summary: 'Registrar transferencia usando datos del formulario dinámico',
+    description:
+      'Endpoint que procesa el output completo del formulario de transferencia',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Transferencia registrada exitosamente',
+    schema: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: true },
+        message: {
+          type: 'string',
+          example: 'Transferencia registrada correctamente',
+        },
+        data: {
+          type: 'object',
+          properties: {
+            transferenciaId: { type: 'number', example: 1 },
+            vehiculo: {
+              type: 'object',
+              properties: {
+                dominio: { type: 'string', example: 'ABC123' },
+                archivoId: { type: 'number', example: 1 },
+              },
+            },
+            vendedor: {
+              type: 'object',
+              properties: {
+                cuit: { type: 'string', example: '20-12345678-9' },
+                denominacion: { type: 'string', example: 'Juan Pérez' },
+                fechaFinVinculo: { type: 'string', format: 'date-time' },
+              },
+            },
+            comprador: {
+              type: 'object',
+              properties: {
+                cuit: { type: 'string', example: '20-11111111-1' },
+                denominacion: { type: 'string', example: 'Carlos Rodríguez' },
+                fechaInicioVinculo: { type: 'string', format: 'date-time' },
+                porcentajePropiedad: { type: 'number', example: 32 },
+                tipoVinculo: { type: 'string', example: 'PRO' },
+                esResponsable: { type: 'boolean', example: true },
+              },
+            },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Error en los datos de transferencia',
+    schema: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean', example: false },
+        message: {
+          type: 'string',
+          example: 'Error al registrar transferencia',
+        },
+      },
+    },
+  })
+  async registrarTransferenciaFormulario(
+    @Body() transferenciaFormularioDto: TransferenciaFormularioDto,
+  ) {
+    return this.automotorService.registrarTransferenciaFormulario(
+      transferenciaFormularioDto,
     );
   }
 

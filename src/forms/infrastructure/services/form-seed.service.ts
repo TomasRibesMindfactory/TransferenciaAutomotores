@@ -334,8 +334,9 @@ export class FormSeedService {
         gap: '16px',
         rowHeight: '85px',
       }),
-      submissionEndpoint: 'http://localhost:3000/api/automotor/transferencia',
-      submissionMethod: 'PUT',
+      submissionEndpoint:
+        'http://localhost:3000/automotor/transferencia-formulario',
+      submissionMethod: 'POST',
       submissionSchema: JSON.stringify({
         type: 'object',
         mapping: {

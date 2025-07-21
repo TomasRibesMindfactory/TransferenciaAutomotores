@@ -129,7 +129,10 @@ export class ValidationsController {
       type: 'object',
       properties: {
         success: { type: 'boolean', example: false },
-        message: { type: 'string', example: 'CUIT 20-12345678-9 no encontrado' },
+        message: {
+          type: 'string',
+          example: 'CUIT 20-12345678-9 no encontrado',
+        },
       },
     },
   })
