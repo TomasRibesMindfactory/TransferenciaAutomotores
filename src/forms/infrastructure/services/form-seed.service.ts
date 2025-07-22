@@ -386,7 +386,7 @@ export class FormSeedService {
               registroDescripcion: { source: 'registro_descripcion' },
               fechaAlta: { source: 'fecha_alta', type: 'date' },
               fechaInicio: { source: 'fecha_inicio', type: 'date' },
-              fechaFabricacion: { source: 'fecha_fabricacion', type: 'date' },
+              fechaFabricacion: { source: 'fecha_fabricacion', type: 'number' },
               fechaRige: { source: 'fecha_rige', type: 'date' },
               origenRnpa: { source: 'origen_rnpa' },
               marcaRnpa: { source: 'marca_rnpa' },

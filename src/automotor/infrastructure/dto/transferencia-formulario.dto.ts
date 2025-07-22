@@ -39,6 +39,15 @@ export class VehiculoTransferenciaDto {
   fechaAlta: string;
 
   @ApiProperty({
+    description: 'fecha de fabricación del vehículo',
+    example: 2020,
+    maxLength: 4,
+    minLength: 4,
+  })
+  @IsNumber()
+  fechaFabricacion: number;
+
+  @ApiProperty({
     description: 'Fecha de inicio de vigencia',
     example: '2020-01-14',
   })
