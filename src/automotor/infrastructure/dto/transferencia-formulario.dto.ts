@@ -94,6 +94,14 @@ export class TransferenciaDetalleDto {
   tipoTransferencia: string;
 
   @ApiProperty({
+    description: 'Fecha de transferencia',
+    example: '2025-07-23',
+  })
+  @IsDateString()
+  @IsOptional()
+  fechaTransferencia?: string;
+
+  @ApiProperty({
     description: 'Monto de la operación',
     example: 6784684,
   })
@@ -197,6 +205,14 @@ export class DocumentacionDto {
   @IsString()
   @IsOptional()
   situacionEspecial?: string;
+
+  @ApiProperty({
+    description: 'Observaciones adicionales',
+    example: 'ok',
+  })
+  @IsString()
+  @IsOptional()
+  observaciones?: string;
 
   @ApiProperty({
     description: 'Usuario que registra la transferencia',

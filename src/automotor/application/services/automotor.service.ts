@@ -117,10 +117,46 @@ export class AutomotorService {
         );
       }
 
-      // Calcular fecha de fin del vínculo anterior (un día antes de la nueva fecha de inicio)
+      // Validación PL/SQL: Debe haber exactamente un responsable
+      // En este caso validamos que el comprador sea responsable
+      if (!comprador.esResponsable) {
+        throw new BadRequestException(
+          'Debe seleccionar un único responsable tributario',
+        );
+      }
+
+      // Validar fecha de transferencia
+      const fechaTransferencia = new Date(
+        transferencia.fechaTransferencia || comprador.fechaInicioVinculo,
+      );
       const fechaInicio = new Date(comprador.fechaInicioVinculo);
+
+      // Calcular fecha de fin del vínculo anterior (un día antes de la nueva fecha de inicio)
       const fechaFinAnterior = new Date(fechaInicio);
       fechaFinAnterior.setDate(fechaFinAnterior.getDate() - 1);
+
+      // Validaciones de fechas
+      if (isNaN(fechaInicio.getTime())) {
+        throw new BadRequestException(
+          'La fecha de inicio del vínculo no es válida',
+        );
+      }
+
+      if (isNaN(new Date(documentacion.fechaAltaTransferencia).getTime())) {
+        throw new BadRequestException(
+          'La fecha de alta de transferencia no es válida',
+        );
+      }
+
+      // Validaciones adicionales
+      if (
+        comprador.porcentajePropiedad < 0 ||
+        comprador.porcentajePropiedad > 100
+      ) {
+        throw new BadRequestException(
+          'El porcentaje de propiedad debe estar entre 0 y 100',
+        );
+      }
 
       // Cerrar el vínculo anterior
       await this.vinculoRepository.updateFechaHasta(
@@ -128,17 +164,31 @@ export class AutomotorService {
         fechaFinAnterior,
       );
 
+      // Validaciones de longitud de campos para la base de datos
+      if (comprador.tipoVinculo.length > 5) {
+        throw new BadRequestException(
+          `El tipo de vínculo '${comprador.tipoVinculo}' excede la longitud máxima permitida (5 caracteres)`,
+        );
+      }
+
+      if (documentacion.usuarioAlta.length > 10) {
+        // Truncamos automáticamente para evitar errores
+        console.warn(
+          `Usuario '${documentacion.usuarioAlta}' truncado a 10 caracteres`,
+        );
+      }
+
       // Crear el nuevo vínculo con el comprador
       const nuevoVinculo = await this.vinculoRepository.create({
-        sujetoPasivoId: compradorEntity.id,
+        sujetoPasivoId: Number(compradorEntity.id),
         objetoValorPredeterminadoId: vehiculo.archivoId,
-        ptvId: comprador.tipoVinculo,
+        ptvId: comprador.tipoVinculo.substring(0, 5),
         fechaInicio: fechaInicio,
         fechaFin: null,
         fechaBaja: null,
-        porcentaje: comprador.porcentajePropiedad,
+        porcentaje: Number(comprador.porcentajePropiedad),
         responsable: comprador.esResponsable ? 'S' : 'N',
-        usuarioAlta: documentacion.usuarioAlta,
+        usuarioAlta: documentacion.usuarioAlta.substring(0, 10),
         fechaAlta: new Date(documentacion.fechaAltaTransferencia),
       });
 
@@ -150,15 +200,24 @@ export class AutomotorService {
           vehiculo: {
             dominio: vehiculo.dominio,
             archivoId: vehiculo.archivoId,
+            codigoAlta: vehiculo.codigoAlta,
+            fechaAlta: vehiculo.fechaAlta,
+            fechaInicio: vehiculo.fechaInicio,
+            fechaRige: vehiculo.fechaRige,
+            origenRnpa: vehiculo.origenRnpa,
+            marcaRnpa: vehiculo.marcaRnpa,
+            tipoRnpa: vehiculo.tipoRnpa,
           },
           vendedor: {
             cuit: vendedorEntity.cuit,
             denominacion: vendedorEntity.denominacion,
+            descripcion: vendedor.descripcion,
             fechaFinVinculo: fechaFinAnterior,
           },
           comprador: {
             cuit: compradorEntity.cuit,
             denominacion: compradorEntity.denominacion,
+            descripcion: comprador.descripcion,
             fechaInicioVinculo: nuevoVinculo.fechaInicio,
             porcentajePropiedad: nuevoVinculo.porcentaje,
             tipoVinculo: nuevoVinculo.ptvId,
@@ -166,12 +225,14 @@ export class AutomotorService {
           },
           transferencia: {
             tipo: transferencia.tipoTransferencia,
+            fechaTransferencia: fechaTransferencia,
             monto: transferencia.montoOperacion,
             moneda: transferencia.moneda,
           },
           documentacion: {
             documentosPresentados: documentacion.documentosPresentados,
             situacionEspecial: documentacion.situacionEspecial,
+            observaciones: documentacion.observaciones || null,
             usuarioAlta: documentacion.usuarioAlta,
             fechaAlta: nuevoVinculo.fechaAlta,
           },
