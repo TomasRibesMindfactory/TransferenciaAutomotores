@@ -100,6 +100,7 @@ export class AutomotorService {
       }
 
       // Buscar el objeto valor predeterminado por el archivoId
+      // Validación según XML: atr_fecha_fin is null and atr_pcj_id is null
       const ovp = await this.ovpRepository.findById(vehiculo.archivoId);
       if (!ovp) {
         throw new NotFoundException(
@@ -107,13 +108,47 @@ export class AutomotorService {
         );
       }
 
+      // Validaciones específicas del formulario Oracle Forms (XML)
+      // Verificar que el automotor esté activo (atr_fecha_fin is null)
+      const automotor = await this.automotorRepository.findById(ovp.atrId);
+      if (!automotor || automotor.fechaFin !== null) {
+        throw new BadRequestException(
+          'El vehículo no está activo para transferencias (atr_fecha_fin no es null)',
+        );
+      }
+
+      // Verificar que no tenga código de baja (atr_pcj_id is null)
+      if (automotor.pcjId !== null) {
+        throw new BadRequestException(
+          'El vehículo tiene código de baja y no puede ser transferido (atr_pcj_id no es null)',
+        );
+      }
+
       // Validar que el vendedor es el titular actual
+      // Validación según XML: VSO_FECHA_FIN is null and VSO_FECHA_BAJA is null
       const titularActual = await this.vinculoRepository.findTitularActual(
         vehiculo.archivoId,
       );
       if (!titularActual || titularActual.sujetoPasivo.cuit !== vendedor.cuit) {
         throw new BadRequestException(
           `El vendedor ${vendedor.cuit} no es el titular actual del vehículo`,
+        );
+      }
+
+      // Validar que el vínculo actual esté activo según el XML
+      if (titularActual.fechaFin !== null || titularActual.fechaBaja !== null) {
+        throw new BadRequestException(
+          'El vínculo actual del vendedor no está activo (VSO_FECHA_FIN o VSO_FECHA_BAJA no son null)',
+        );
+      }
+
+      // Validación adicional según XML: nvl(vso_pcj_id, '0') not in ('640','641','642','BUS')
+      if (
+        titularActual.pcjId &&
+        ['640', '641', '642', 'BUS'].includes(titularActual.pcjId)
+      ) {
+        throw new BadRequestException(
+          `El vínculo actual tiene un código de situación especial que impide la transferencia: ${titularActual.pcjId}`,
         );
       }
 

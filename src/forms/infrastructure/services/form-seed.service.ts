@@ -227,31 +227,65 @@ export class FormSeedService {
       ]),
       validationsConfig: JSON.stringify({
         rules: [
-          {
-            field: 'cuit_propietario',
-            type: 'foreign_key',
-            table: 'SUJETOS_PASIVOS',
-            message: 'El CUIT del propietario debe existir en el sistema',
-          },
+          // Validaciones según el XML del formulario Oracle Forms AUFA0090_CBA
           {
             field: 'patente',
-            type: 'unique',
-            table: 'AUTOMOTORES',
-            message: 'Ya existe un vehículo registrado con esta patente',
+            type: 'oracle_where_clause',
+            condition: 'atr_fecha_fin is null and atr_pcj_id is null',
+            message: 'El vehículo no está activo para transferencias',
+            description: 'Validación del bloque AUTOMOTORES según XML',
           },
           {
-            field: 'numero_motor',
-            type: 'unique',
-            table: 'AUTOMOTORES',
-            message:
-              'Ya existe un vehículo registrado con este número de motor',
+            field: 'cuit_vendedor',
+            type: 'oracle_where_clause',
+            condition: 'VSO_FECHA_FIN is null and VSO_FECHA_BAJA is null',
+            message: 'El vendedor no tiene un vínculo activo con el vehículo',
+            description:
+              'Validación del bloque VINCULOS_SUJETO_OBJETO_ANT según XML',
           },
           {
-            field: 'numero_chasis',
-            type: 'unique',
-            table: 'AUTOMOTORES',
+            field: 'vendedor_pcj_id',
+            type: 'oracle_where_clause',
+            condition: "nvl(vso_pcj_id, '0') not in ('640','641','642','BUS')",
+            message: 'El vínculo tiene códigos que impiden la transferencia',
+            description: 'Validación de códigos especiales según XML',
+          },
+          {
+            field: 'cuit_comprador',
+            type: 'oracle_where_clause',
+            condition:
+              'SYSDATE BETWEEN VSO_FECHA_INICIO AND NVL(VSO_FECHA_FIN, SYSDATE+1)',
+            message: 'Validación de vigencia de vínculo según XML',
+            description: 'Validación del bloque VSO_ALTA según XML',
+          },
+          {
+            field: 'cuit_vendedor',
+            type: 'foreign_key',
+            table: 'SUJETOS_PASIVOS',
+            message: 'El CUIT del vendedor debe existir en el sistema',
+          },
+          {
+            field: 'cuit_comprador',
+            type: 'foreign_key',
+            table: 'SUJETOS_PASIVOS',
+            message: 'El CUIT del comprador debe existir en el sistema',
+          },
+          {
+            field: 'tipo_vinculo',
+            type: 'foreign_key',
+            table: 'PAR_TIPOS_VINCULOS',
             message:
-              'Ya existe un vehículo registrado con este número de chasis',
+              'El tipo de vínculo debe ser válido según PAR_TIPOS_VINCULOS',
+            description:
+              'Validación según LOV CGFK$VSO_ALTA_VSO_PTV_ID del XML',
+          },
+          {
+            field: 'moneda',
+            type: 'foreign_key',
+            table: 'PAR_MONEDAS',
+            message: 'La unidad monetaria debe ser válida según PAR_MONEDAS',
+            description:
+              'Validación según LOV CGFK$TRANSFERENCIAS_TFA_PMA_ID del XML',
           },
         ],
         constraints: [

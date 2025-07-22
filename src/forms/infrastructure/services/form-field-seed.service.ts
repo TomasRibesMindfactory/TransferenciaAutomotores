@@ -1311,16 +1311,37 @@ export class FormFieldSeedService {
         description: null,
         orderIndex: 33,
         defaultValue: 'ARS',
-        help: 'Seleccione la moneda según PAR_MONEDAS',
+        help: 'Seleccione la moneda según PAR_MONEDAS (LOV del formulario Oracle)',
         fieldConfig: JSON.stringify({
+          loadFromEndpoint: true,
+          endpoint: 'forms/dependent-options',
+          requestBody: {
+            endpoint: 'PAR_MONEDAS',
+            parentValue: 'ALL',
+          },
+          valueField: 'pma_id',
+          labelField: 'pma_descripcion',
           options: [
             { id: 'ARS', label: 'Pesos Argentinos' },
             { id: 'USD', label: 'Dólares Estadounidenses' },
             { id: 'EUR', label: 'Euros' },
           ],
         }),
-        validationConfig: JSON.stringify({}),
-        eventsConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({
+          customValidation: 'validateMonedaExists',
+        }),
+        eventsConfig: JSON.stringify({
+          onChange: {
+            action: 'populate',
+            endpoint: 'validations/moneda',
+            requestBody: {
+              value: '{{ field_value }}',
+            },
+            fields: {
+              moneda_descripcion: 'pmaDescripcion',
+            },
+          },
+        }),
       },
       {
         formId: 'vehicle-transfer',
@@ -1330,13 +1351,75 @@ export class FormFieldSeedService {
         description: null,
         readonly: true,
         orderIndex: 34,
-        help: 'Se asigna automáticamente usando TFA_SEQ.NEXTVAL',
+        help: 'Se asigna automáticamente usando TFA_SEQ.NEXTVAL como en Oracle Forms',
         fieldConfig: JSON.stringify({}),
         validationConfig: JSON.stringify({}),
         eventsConfig: JSON.stringify({}),
       },
+      {
+        formId: 'vehicle-transfer',
+        name: 'codigo_situacion_especial',
+        type: 'select',
+        label: 'Código Situación Especial',
+        description: null,
+        orderIndex: 35,
+        help: 'Códigos 640, 641, 642, BUS impiden transferencias según validación del XML',
+        fieldConfig: JSON.stringify({
+          options: [
+            { id: null, label: 'Sin situación especial' },
+            { id: '640', label: '640 - Embargado' },
+            { id: '641', label: '641 - Inhibido' },
+            { id: '642', label: '642 - Secuestrado' },
+            { id: 'BUS', label: 'BUS - En búsqueda' },
+            { id: 'OTHER', label: 'Otro código' },
+          ],
+        }),
+        validationConfig: JSON.stringify({
+          customValidation: 'validateSituacionEspecial',
+        }),
+        eventsConfig: JSON.stringify({
+          onChange: {
+            action: 'validate',
+            validation: 'blockTransferIfRestricted',
+            message: 'Este código impide realizar transferencias',
+          },
+        }),
+      },
 
       // SECCIÓN: Documentación y Observaciones
+      {
+        formId: 'vehicle-transfer',
+        name: 'validacion_fecha_fin',
+        type: 'hidden',
+        label: 'Validación Fecha Fin',
+        description: null,
+        readonly: true,
+        orderIndex: 36,
+        help: 'Validación interna del sistema según lógica del formulario Oracle',
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({
+          customValidation: 'validateFechaFinIsNull',
+          errorMessage: 'El vehículo no está activo (atr_fecha_fin no es null)',
+        }),
+        eventsConfig: JSON.stringify({}),
+      },
+      {
+        formId: 'vehicle-transfer',
+        name: 'validacion_pcj_id',
+        type: 'hidden',
+        label: 'Validación PCJ ID',
+        description: null,
+        readonly: true,
+        orderIndex: 37,
+        help: 'Validación interna del sistema según lógica del formulario Oracle',
+        fieldConfig: JSON.stringify({}),
+        validationConfig: JSON.stringify({
+          customValidation: 'validatePcjIdIsNull',
+          errorMessage:
+            'El vehículo tiene código de baja y no puede ser transferido',
+        }),
+        eventsConfig: JSON.stringify({}),
+      },
       {
         formId: 'vehicle-transfer',
         name: 'documentos_presentados',
