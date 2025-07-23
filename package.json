@@ -24,7 +24,10 @@
     "docker:build": "docker-compose build",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
-    "docker:logs": "docker-compose logs -f app"
+    "docker:logs": "docker-compose logs -f app",
+    "dead-code:exports": "ts-unused-exports tsconfig.json",
+    "dead-code:deps": "unimported",
+    "dead-code:all": "npm run dead-code:exports && npm run dead-code:deps"
   },
   "dependencies": {
     "@nestjs/axios": "^4.0.1",
@@ -39,7 +42,9 @@
     "mssql": "^11.0.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
-    "typeorm": "^0.3.17"
+    "ts-unused-exports": "^11.0.1",
+    "typeorm": "^0.3.17",
+    "unimported": "^1.31.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

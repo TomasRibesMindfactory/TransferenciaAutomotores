@@ -19,10 +19,7 @@ export class TransferenciaController {
 
   @Post()
   async crearTransferencia(@Body() dto: CrearTransferenciaDto) {
-    return await this.transferenciaService.crearTransferencia({
-      ...dto,
-      fechaTransferencia: new Date(dto.fechaTransferencia),
-    });
+    return await this.transferenciaService.crearTransferencia(dto);
   }
 
   @Get(':id')

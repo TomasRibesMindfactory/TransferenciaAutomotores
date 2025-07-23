@@ -17,54 +17,6 @@ export interface ValidationResult {
   message?: string;
 }
 
-export interface DominioValidationResult extends ValidationResult {
-  data?: {
-    // Datos básicos del automotor
-    atrId?: number;
-    atrDominio?: string;
-    atrPthId?: string;
-    atrPmoId?: string;
-    atrPcaId?: string;
-    atrPrtId?: string;
-    atrFechaAlta?: Date;
-    atrFechaInicio?: Date;
-    atrFechaFabricacion?: number;
-    atrFechaRige?: Date;
-    atrUsuarioAlta?: string;
-    atrFechaUltimaActualizacion?: Date;
-    atrIdMarcaRnpa?: string;
-    atrIdTipoRnpa?: string;
-    atrIdModeloRnpa?: string;
-    atrOrigenRnpa?: string;
-
-    // Descripciones auto-rellenadas
-    pmoDescripcion?: string;
-    pcaDescripcion?: string;
-    prtDescripcion?: string;
-    marcaDescripcion?: string;
-    tipoDescripcion?: string;
-    modeloDescripcion?: string;
-    municipioDesc?: string;
-
-    // ID del objeto valor predeterminado
-    ovpId?: number;
-  };
-}
-
-export interface CuitValidationResult extends ValidationResult {
-  data?: {
-    spoId?: number;
-    spoDenominacion?: string;
-    spoFechaBaja?: Date;
-  };
-}
-
-export interface ParametricValidationResult extends ValidationResult {
-  data?: {
-    descripcion?: string;
-  };
-}
-
 @Injectable()
 export class ValidationsService {
   constructor(
@@ -92,7 +44,7 @@ export class ValidationsService {
    * Valida un dominio y retorna todos los datos del automotor
    * Equivale a VERIFICAR_DOMINIO + EXECUTE_QUERY en Oracle Forms
    */
-  async validateDominio(dominio: string): Promise<DominioValidationResult> {
+  async validateDominio(dominio: string): Promise<ValidationResult> {
     try {
       // Buscar el automotor por dominio
       const automotor = await this.automotorEntityRepository
@@ -178,7 +130,7 @@ export class ValidationsService {
    * Valida un CUIT y retorna los datos del sujeto pasivo
    * Equivale a obtiene_cuit en Oracle Forms
    */
-  async validateCuit(cuit: string): Promise<CuitValidationResult> {
+  async validateCuit(cuit: string): Promise<ValidationResult> {
     try {
       const sujetoPasivo = await this.sujetoPasivoRepository.findByCuit(cuit);
 
@@ -213,7 +165,7 @@ export class ValidationsService {
   async validateCodigoAlta(
     pcaId: string,
     ptaId?: string,
-  ): Promise<ParametricValidationResult> {
+  ): Promise<ValidationResult> {
     try {
       const whereCondition: any = { id: pcaId };
       if (ptaId) {
@@ -250,9 +202,7 @@ export class ValidationsService {
    * Valida registro automotor y retorna su descripción
    * Equivale a CGFK$QRY_AUTOMOTORES_ATR_PRT_F
    */
-  async validateRegistroAutomotor(
-    prtId: string,
-  ): Promise<ParametricValidationResult> {
+  async validateRegistroAutomotor(prtId: string): Promise<ValidationResult> {
     try {
       const registro = await this.parRegistroRepository.findOne({
         where: { id: prtId },
@@ -284,9 +234,7 @@ export class ValidationsService {
    * Valida tipo de vehículo y retorna su descripción
    * Equivale a CGFK$CHK_AUTOMOTORES_ATR_PTH_F
    */
-  async validateTipoVehiculo(
-    pthId: string,
-  ): Promise<ParametricValidationResult> {
+  async validateTipoVehiculo(pthId: string): Promise<ValidationResult> {
     try {
       const tipoVehiculo = await this.parTipoVehiculoRepository.findById(pthId);
 
@@ -316,7 +264,7 @@ export class ValidationsService {
    * Valida modelo RNPA y retorna su descripción
    * Equivale a CGFK$QRY_AUTOMOTORES_ATR_PMO_F
    */
-  async validateModeloRnpa(pmoId: string): Promise<ParametricValidationResult> {
+  async validateModeloRnpa(pmoId: string): Promise<ValidationResult> {
     try {
       const modelo = await this.parModeloRepository.findOne({
         where: { id: pmoId },
@@ -348,7 +296,7 @@ export class ValidationsService {
    * Valida moneda y retorna su descripción
    * Equivale a CGFK$CHK_TRANSFERENCIAS_TFA_PM
    */
-  async validateMoneda(pmaId: string): Promise<ParametricValidationResult> {
+  async validateMoneda(pmaId: string): Promise<ValidationResult> {
     try {
       const moneda = await this.parMonedaRepository.findOne({
         where: { id: pmaId },

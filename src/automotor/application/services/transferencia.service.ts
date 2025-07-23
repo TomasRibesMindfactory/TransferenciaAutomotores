@@ -8,19 +8,7 @@ import { TransferenciaRepositoryPort } from '../../domain/ports/transferencia-re
 import { SujetoPasivoRepositoryPort } from '../../domain/ports/sujeto-pasivo-repository.port';
 import { ObjetoValorPredeterminadoRepositoryPort } from '../../domain/ports/objeto-valor-predeterminado-repository.port';
 import { Transferencia } from '../../infrastructure/entities/transferencia.entity';
-
-export interface CrearTransferenciaDto {
-  ovpOvpId: number;
-  spoId: number;
-  spoIdNuevoDueno: number;
-  fechaTransferencia: Date;
-  pmaId: string;
-  importeSellos?: number;
-  importeTransferencia?: number;
-  atrDominio: string;
-  atrPthId: string;
-  usuarioAlta: string;
-}
+import { CrearTransferenciaDto } from '../../infrastructure/dto/transferencia.dto';
 
 @Injectable()
 export class TransferenciaService {
@@ -38,6 +26,7 @@ export class TransferenciaService {
 
     const transferencia = await this.transferenciaRepository.create({
       ...dto,
+      fechaTransferencia: new Date(dto.fechaTransferencia),
       fechaAlta: new Date(),
     });
 
