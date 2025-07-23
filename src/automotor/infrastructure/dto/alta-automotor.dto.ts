@@ -13,7 +13,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export class PropietarioDto {
+class PropietarioDto {
   @ApiProperty({
     description: 'CUIT del propietario',
     example: '20-12345678-9',
@@ -42,7 +42,7 @@ export class PropietarioDto {
   esResponsable: boolean;
 }
 
-export class VehiculoDto {
+class VehiculoDto {
   @ApiProperty({
     description: 'Patente del vehículo',
     example: 'AA123BB',

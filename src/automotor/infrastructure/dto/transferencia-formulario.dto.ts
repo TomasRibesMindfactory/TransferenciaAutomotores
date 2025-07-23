@@ -14,7 +14,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export class VehiculoTransferenciaDto {
+class VehiculoTransferenciaDto {
   @ApiProperty({
     description: 'Dominio del vehículo',
     example: 'ABC123',
@@ -93,7 +93,7 @@ export class VehiculoTransferenciaDto {
   archivoId: number;
 }
 
-export class TransferenciaDetalleDto {
+class TransferenciaDetalleDto {
   @ApiProperty({
     description: 'Tipo de transferencia',
     example: 'C',
@@ -127,7 +127,7 @@ export class TransferenciaDetalleDto {
   moneda?: string;
 }
 
-export class VendedorDto {
+class VendedorDto {
   @ApiProperty({
     description: 'CUIT del vendedor',
     example: '20-12345678-9',
@@ -146,7 +146,7 @@ export class VendedorDto {
   descripcion: string;
 }
 
-export class CompradorDto {
+class CompradorDto {
   @ApiProperty({
     description: 'CUIT del comprador',
     example: '20-11111111-1',
@@ -198,7 +198,7 @@ export class CompradorDto {
   esResponsable: boolean;
 }
 
-export class DocumentacionDto {
+class DocumentacionDto {
   @ApiProperty({
     description: 'Lista de documentos presentados',
     example: ['dni_comprador', 'formulario_08', 'libre_deuda'],
