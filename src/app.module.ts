@@ -54,8 +54,8 @@ import { FormSubmission } from './forms/infrastructure/entities/form-submission.
           FormSubmission,
         ],
         synchronize: true,
-        logging: true,
-        logger: 'advanced-console',
+        //logging: true,
+        //logger: 'advanced-console',
         dropSchema: true,
         extra: {
           trustServerCertificate: true,

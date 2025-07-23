@@ -61,7 +61,7 @@ export class FormSeedService {
         gap: '16px',
         rowHeight: '85px',
       }),
-      submissionEndpoint: 'http://localhost:3000automotor/alta-modificacion',
+      submissionEndpoint: 'http://localhost:3000/automotor/alta-modificacion',
       submissionMethod: 'POST',
       submissionSchema: JSON.stringify({
         type: 'object',
