@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AutomotorModule } from './automotor/automotor.module';
 import { FormsModule } from './forms/forms.module';
 import { Automotor } from './automotor/infrastructure/entities/automotor.entity';
@@ -22,45 +21,37 @@ import { FormSubmission } from './forms/infrastructure/entities/form-submission.
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-      envFilePath: '.env',
-    }),
-    TypeOrmModule.forRootAsync({
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        type: 'mssql',
-        host: configService.get('DB_HOST', 'localhost'),
-        port: parseInt(configService.get('DB_PORT', '1433'), 10),
-        username: configService.get('DB_USERNAME', 'sa'),
-        password: configService.get('DB_PASSWORD', 'TransferApp2024!'),
-        database: configService.get('DB_DATABASE', 'TransferenciaAutomotor'),
-        entities: [
-          Automotor,
-          SujetoPasivo,
-          VinculoSujetoObjeto,
-          ObjetoValorPredeterminado,
-          Transferencia,
-          ParTipoVehiculo,
-          ParModelo,
-          ParTipoVinculo,
-          ParMoneda,
-          ParRegistroAutomotor,
-          ParCodigoAlta,
-          VinculoSituacionEspecial,
-          Usuario,
-          Form,
-          FormField,
-          FormSubmission,
-        ],
-        synchronize: true,
-        //logging: true,
-        //logger: 'advanced-console',
-        dropSchema: true,
-        extra: {
-          trustServerCertificate: true,
-        },
-      }),
+    TypeOrmModule.forRoot({
+      type: 'mssql',
+      host: process.env.DB_HOST || 'localhost',
+      port: parseInt(process.env.DB_PORT || '1433', 10),
+      username: process.env.DB_USERNAME || 'sa',
+      password: process.env.DB_PASSWORD || 'TransferApp2024!',
+      database: process.env.DB_DATABASE || 'TransferenciaAutomotor',
+      entities: [
+        Automotor,
+        SujetoPasivo,
+        VinculoSujetoObjeto,
+        ObjetoValorPredeterminado,
+        Transferencia,
+        ParTipoVehiculo,
+        ParModelo,
+        ParTipoVinculo,
+        ParMoneda,
+        ParRegistroAutomotor,
+        ParCodigoAlta,
+        VinculoSituacionEspecial,
+        Usuario,
+        Form,
+        FormField,
+        FormSubmission,
+      ],
+      synchronize: true,
+      dropSchema: true,
+      options: {
+        encrypt: false,
+        trustServerCertificate: true,
+      },
     }),
     AutomotorModule,
     FormsModule,
