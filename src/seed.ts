@@ -9,7 +9,7 @@ async function runSeed() {
   const seedService = app.get(SeedService);
 
   try {
-    await seedService.seedDatabase();
+    await seedService.seedRun();
     console.log('✅ Seed ejecutado exitosamente');
   } catch (error) {
     console.error('❌ Error ejecutando seed:', error);

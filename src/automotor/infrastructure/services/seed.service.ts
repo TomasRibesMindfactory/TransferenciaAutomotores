@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Automotor } from '../entities/automotor.entity';
@@ -26,7 +26,7 @@ import {
 } from '../data/seed-data';
 
 @Injectable()
-export class SeedService implements OnModuleInit {
+export class SeedService {
   constructor(
     @InjectRepository(Automotor)
     private readonly automotorRepository: Repository<Automotor>,
@@ -58,7 +58,7 @@ export class SeedService implements OnModuleInit {
     private readonly formFieldSeedService: FormFieldSeedService,
   ) {}
 
-  async onModuleInit() {
+  async seedRun() {
     await this.seedDatabase();
     // Poblar formularios dinámicos después de los datos base
     await this.formSeedService.seedForms();
