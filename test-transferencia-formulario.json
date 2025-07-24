@@ -1,0 +1,40 @@
+{
+  "vehiculo": {
+    "dominio": "ABC123",
+    "codigoAlta": "001",
+    "fechaAlta": "2020-01-14",
+    "fechaInicio": "2020-01-14",
+    "fechaRige": "2020-01-14",
+    "origenRnpa": "N",
+    "marcaRnpa": "455436",
+    "tipoRnpa": "6356356",
+    "archivoId": 1
+  },
+  "transferencia": {
+    "tipoTransferencia": "C",
+    "montoOperacion": 6784684,
+    "moneda": "ARS"
+  },
+  "vendedor": {
+    "cuit": "20-12345678-9",
+    "descripcion": "Juan Pérez"
+  },
+  "comprador": {
+    "cuit": "20-11111111-1",
+    "descripcion": "Carlos Rodríguez",
+    "porcentajePropiedad": 32,
+    "tipoVinculo": "PRO",
+    "fechaInicioVinculo": "2025-07-03",
+    "esResponsable": true
+  },
+  "documentacion": {
+    "documentosPresentados": [
+      "dni_comprador",
+      "formulario_08",
+      "libre_deuda"
+    ],
+    "situacionEspecial": "EMBARGO",
+    "usuarioAlta": "Usuario Sistema",
+    "fechaAltaTransferencia": "2025-07-21T17:34:14.009Z"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "ignoreUnresolved": [
+    [
+      "src/forms/domain/ports/form-field-repository.port",
+      [
+        "src\\forms\\infrastructure\\services\\form-field-seed.service.ts"
+      ]
+    ]
+  ],
+  "ignoreUnused": [
+    "ts-unused-exports",
+    "unimported"
+  ],
+  "ignoreUnimported": [
+    "C:\\Users\\Usuario\\Desktop\\Proyectos\\TransferenciaAutomotores\\src\\seed.ts"
+  ]
+}

@@ -5,16 +5,20 @@ import { ObjetoValorPredeterminado } from '../entities/objeto-valor-predetermina
 import { ObjetoValorPredeterminadoRepositoryPort } from '../../domain/ports/objeto-valor-predeterminado-repository.port';
 
 @Injectable()
-export class ObjetoValorPredeterminadoRepository implements ObjetoValorPredeterminadoRepositoryPort {
+export class ObjetoValorPredeterminadoRepository
+  implements ObjetoValorPredeterminadoRepositoryPort
+{
   constructor(
     @InjectRepository(ObjetoValorPredeterminado)
     private readonly ovpRepository: Repository<ObjetoValorPredeterminado>,
   ) {}
 
-  async findByAutomotorId(automotorId: number): Promise<ObjetoValorPredeterminado[]> {
+  async findByAutomotorId(
+    automotorId: number,
+  ): Promise<ObjetoValorPredeterminado[]> {
     return this.ovpRepository.find({
-      where: { automotorId },
-      order: { fechaVigencia: 'DESC' },
+      where: { atrId: automotorId },
+      order: { fechaInicio: 'DESC' },
     });
   }
 
@@ -24,4 +28,11 @@ export class ObjetoValorPredeterminadoRepository implements ObjetoValorPredeterm
       relations: ['automotor'],
     });
   }
-} 
+
+  async create(
+    objetoValor: Partial<ObjetoValorPredeterminado>,
+  ): Promise<ObjetoValorPredeterminado> {
+    const newObjetoValor = this.ovpRepository.create(objetoValor);
+    return this.ovpRepository.save(newObjetoValor);
+  }
+}

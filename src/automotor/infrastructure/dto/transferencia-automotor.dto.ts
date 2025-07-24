@@ -1,5 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsNumber, IsBoolean, IsDateString, Min, Max, Length } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsNumber,
+  IsBoolean,
+  IsDateString,
+  Min,
+  Max,
+  Length,
+} from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class TransferenciaAutomotorDto {
@@ -44,4 +53,4 @@ export class TransferenciaAutomotorDto {
     return value;
   })
   responsable: boolean;
-} 
+}

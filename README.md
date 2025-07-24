@@ -28,12 +28,89 @@ src/automotor/
 - **Aplicación**: Implementa los casos de uso y lógica de negocio
 - **Adaptadores**: Implementaciones concretas (repositorios, controladores)
 
-## 🚀 Instalación
+## � Docker Setup
+
+### Prerrequisitos
+
+- Docker Desktop instalado
+- Docker Compose (incluido en Docker Desktop)
+
+### 🚀 Inicio Rápido con Docker
+
+#### 1. Solo Base de Datos (Para desarrollo local)
+
+```bash
+# Iniciar solo la base de datos SQL Server
+docker-compose -f docker-compose.dev.yml up -d
+
+# La base de datos estará disponible en:
+# Host: localhost
+# Puerto: 1433
+# Usuario: sa
+# Contraseña: TransferApp2024!
+# Base de datos: TransferenciaAutomotor (se crea automáticamente)
+```
+
+#### 2. Aplicación Completa (Producción)
+
+```bash
+# Construir e iniciar toda la aplicación
+docker-compose up --build
+
+# En modo separado (background)
+docker-compose up --build -d
+
+# Ver logs
+docker-compose logs -f app
+```
+
+### 🛠️ Comandos Docker Útiles
+
+```bash
+# Detener los contenedores
+docker-compose down
+
+# Eliminar volúmenes (¡CUIDADO! Esto elimina los datos)
+docker-compose down -v
+
+# Reconstruir la aplicación
+docker-compose build app
+
+# Conectarse a la base de datos desde un cliente externo
+# Servidor: localhost,1433
+# Usuario: sa
+# Contraseña: TransferApp2024!
+```
+
+### 📋 Variables de Entorno
+
+El archivo `.env` contiene las siguientes configuraciones:
+
+```env
+# Database Configuration
+DB_HOST=localhost
+DB_PORT=1433
+DB_USERNAME=sa
+DB_PASSWORD=TransferApp2024!
+DB_DATABASE=TransferenciaAutomotor
+
+# Application Configuration
+NODE_ENV=development
+PORT=3000
+```
+
+**Credenciales por defecto:**
+- Usuario: `sa`
+- Contraseña: `TransferApp2024!`
+- Base de datos: `TransferenciaAutomotor`
+
+## �🚀 Instalación Manual (Sin Docker)
 
 ### Prerrequisitos
 
 - Node.js (versión 16 o superior)
 - npm o yarn
+- SQL Server (local o remoto)
 
 ### Pasos de instalación
 
@@ -46,6 +123,14 @@ src/automotor/
 2. **Instalar dependencias**
    ```bash
    npm install
+   ```
+
+3. **Configurar variables de entorno**
+   ```bash
+   # Copiar el archivo de ejemplo
+   cp .env.example .env
+   
+   # Editar el archivo .env con tus configuraciones
    ```
 
 3. **Levantar el proyecto**

@@ -5,7 +5,9 @@ import { VinculoSujetoObjeto } from '../entities/vinculo-sujeto-objeto.entity';
 import { VinculoSujetoObjetoRepositoryPort } from '../../domain/ports/vinculo-sujeto-objeto-repository.port';
 
 @Injectable()
-export class VinculoSujetoObjetoRepository implements VinculoSujetoObjetoRepositoryPort {
+export class VinculoSujetoObjetoRepository
+  implements VinculoSujetoObjetoRepositoryPort
+{
   constructor(
     @InjectRepository(VinculoSujetoObjeto)
     private readonly vinculoRepository: Repository<VinculoSujetoObjeto>,
@@ -15,19 +17,21 @@ export class VinculoSujetoObjetoRepository implements VinculoSujetoObjetoReposit
     return this.vinculoRepository.findOne({
       where: {
         objetoValorPredeterminadoId: ovpId,
-        fechaHasta: null,
+        fechaFin: null,
         fechaBaja: null,
       },
       relations: ['sujetoPasivo'],
     });
   }
 
-  async create(vinculo: Partial<VinculoSujetoObjeto>): Promise<VinculoSujetoObjeto> {
+  async create(
+    vinculo: Partial<VinculoSujetoObjeto>,
+  ): Promise<VinculoSujetoObjeto> {
     const nuevoVinculo = this.vinculoRepository.create(vinculo);
     return this.vinculoRepository.save(nuevoVinculo);
   }
 
-  async updateFechaHasta(id: number, fechaHasta: Date): Promise<void> {
-    await this.vinculoRepository.update(id, { fechaHasta });
+  async updateFechaHasta(id: number, fechaFin: Date): Promise<void> {
+    await this.vinculoRepository.update(id, { fechaFin });
   }
-} 
+}

@@ -25,4 +25,4 @@ export class SujetoPasivoRepository implements SujetoPasivoRepositoryPort {
       where: { id },
     });
   }
-} 
+}

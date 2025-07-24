@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: transferencia-automotor-db
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=TransferApp2024!
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - db_data:/var/opt/mssql
+    networks:
+      - transferencia-network
+
+  db-init:
+    image: mcr.microsoft.com/mssql-tools:latest
+    depends_on:
+      - db
+    entrypoint:
+      - /opt/mssql-tools/bin/sqlcmd
+      - -S
+      - db
+      - -U
+      - sa
+      - -P
+      - "TransferApp2024!"
+      - -Q
+      - "IF DB_ID('TransferenciaAutomotor') IS NULL CREATE DATABASE TransferenciaAutomotor;"
+    networks:
+      - transferencia-network
+    # se ejecuta una sola vez y sale
+    restart: "no"
+
+  app:
+    build: .
+    container_name: transferencia-automotor-app
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=db
+      - DB_PORT=1433
+      - DB_USERNAME=sa
+      - DB_PASSWORD=TransferApp2024!
+      - DB_DATABASE=TransferenciaAutomotor
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    restart: unless-stopped
+    networks:
+      - transferencia-network
+
+volumes:
+  db_data:
+
+networks:
+  transferencia-network:
+    driver: bridge
