@@ -30,6 +30,65 @@ export class FormsController {
     private readonly validationService: FormValidationService,
   ) {}
 
+  @Post()
+  @ApiOperation({
+    summary: 'Crear un formulario con campos y configuración completa',
+  })
+  @ApiResponse({ status: 201, description: 'Formulario creado exitosamente' })
+  @ApiResponse({ status: 400, description: 'Datos inválidos' })
+  async createForm(@Body() body: any) {
+    try {
+      // Separar campos del formulario del resto de la configuración
+      const { fields, ...formConfig } = body;
+
+      // Serializar las configuraciones que son objetos a string JSON
+      const configToString = (value: any) =>
+        value && typeof value !== 'string' ? JSON.stringify(value) : value;
+
+      // Preparar el objeto para persistir
+      // Función para validar UUID v4
+      const isValidUUID = (id: any) =>
+        typeof id === 'string' &&
+        /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/.test(
+          id,
+        );
+
+      const formData = {
+        ...formConfig,
+        buttonsConfig: configToString(formConfig.buttonsConfig),
+        layoutConfig: configToString(formConfig.layoutConfig),
+        submissionSchema: configToString(formConfig.submissionSchema),
+        validationRules: configToString(formConfig.validationRules),
+        validationConstraints: configToString(formConfig.validationConstraints),
+        eventsConfig: configToString(formConfig.eventsConfig),
+        sectionsConfig: configToString(formConfig.sectionsConfig),
+        fields: Array.isArray(fields)
+          ? fields.map((field: any) => {
+              const cleanField = { ...field };
+              // Si el id no es un UUID válido, eliminarlo para que la base lo genere
+              if (!isValidUUID(cleanField.id)) {
+                delete cleanField.id;
+              }
+              cleanField.fieldConfig = configToString(field.fieldConfig);
+              cleanField.validationConfig = configToString(
+                field.validationConfig,
+              );
+              cleanField.eventsConfig = configToString(field.eventsConfig);
+              return cleanField;
+            })
+          : [],
+      };
+
+      const created = await this.formsService.createForm(formData);
+      return created;
+    } catch (error) {
+      throw new HttpException(
+        `Error al crear formulario: ${error.message}`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
   @Get()
   @ApiOperation({ summary: 'Obtener lista de formularios' })
   @ApiResponse({
