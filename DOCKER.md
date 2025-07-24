@@ -1,157 +1,64 @@
-# 🐳 Guía de Docker para Transferencia de Automotor
+# Instrucciones para Docker con NPM Scripts
 
-## 📋 Resumen de Cambios
+Este documento resume los pasos y scripts necesarios para levantar y gestionar tu stack de Docker (SQL Server + NestJS) usando los comandos definidos en `package.json`.
 
-### Credenciales Actualizadas
-- **Usuario anterior**: `sa` / `Nicolas..8`
-- **Usuario nuevo**: `sa` / `TransferApp2024!`
+## Prerrequisitos
 
-### Archivos Creados/Modificados
-- ✅ `docker-compose.yml` - Orquestación completa (app + db)
-- ✅ `docker-compose.dev.yml` - Solo base de datos para desarrollo
-- ✅ `Dockerfile` - Imagen de la aplicación NestJS
-- ✅ `.env` - Variables de entorno
-- ✅ `.dockerignore` - Archivos excluidos del build
-- ✅ `src/app.module.ts` - Configuración con variables de entorno
-- ✅ `package.json` - Scripts adicionales para Docker
+* Docker y Docker Compose instalados.
+* Node.js y NPM instalados (para ejecutar los scripts).
 
-## 🚀 Comandos Rápidos
+## Scripts NPM disponibles
 
-### Solo Base de Datos (Desarrollo Local)
+| Script                   | Descripción                                                    |
+| ------------------------ | -------------------------------------------------------------- |
+| `npm run docker:db`      | Levanta el contenedor de base de datos (modo desarrollo).      |
+| `npm run db:init`        | Crea la base `TransferenciaAutomotor` si no existe.            |
+| `npm run migration:run`  | Ejecuta las migraciones de TypeORM.                            |
+| `npm run seed:run`       | Inserta datos de prueba (seeders).                             |
+| `npm run docker:build`   | Construye las imágenes Docker (`db` y `app`).                  |
+| `npm run docker:up`      | Levanta todos los servicios definidos en `docker-compose.yml`. |
+| `npm run docker:logs`    | Muestra los logs de la aplicación NestJS en tiempo real.       |
+| `npm run docker:down`    | Detiene y elimina todos los contenedores del proyecto.         |
+| `npm run docker:db:stop` | Detiene el contenedor de base de datos (desarrollo).           |
+
+## Flujo de ejecución recomendado
+
 ```bash
-# Iniciar SQL Server en Docker
+# 1. Levantar el contenedor de base de datos (dev)
 npm run docker:db
 
-# Detener base de datos
-npm run docker:db:stop
-```
+# 2. Crear la base de datos si no existe
+npm run db:init
 
-### Aplicación Completa
-```bash
-# Construir y ejecutar todo
+# 3. Ejecutar migraciones (TypeORM)
+npm run migration:run
+
+# 4. Sembrar datos de prueba
+npm run seed:run
+
+# 5. Construir imágenes Docker
+docker-compose build
+# o usando el script:
 npm run docker:build
+
+# 6. Levantar toda la infraestructura (DB + app)
 npm run docker:up
 
-# Ver logs de la aplicación
+# 7. Ver logs de la aplicación NestJS
 npm run docker:logs
-
-# Detener todo
-npm run docker:down
 ```
 
-## 🔧 Configuración de Base de Datos
+## Detalles adicionales
 
-### Credenciales por Defecto
-```
-Servidor: localhost,1433
-Usuario: sa
-Contraseña: TransferApp2024!
-Base de datos: TransferenciaAutomotor
-```
+* El script `db:init` utiliza:
 
-### Conexión desde Cliente Externo
-Puedes conectarte usando cualquier cliente SQL (SSMS, Azure Data Studio, etc.) con:
-- **Host**: `localhost`
-- **Puerto**: `1433`
-- **Usuario**: `sa`
-- **Contraseña**: `TransferApp2024!`
+  ```sql
+  IF DB_ID('TransferenciaAutomotor') IS NULL
+    CREATE DATABASE TransferenciaAutomotor;
+  ```
 
-## 📁 Estructura de Archivos Docker
+  para no fallar si la base ya existe.
 
-```
-📦 Proyecto
-├── 🐳 docker-compose.yml          # Producción (app + db)
-├── 🐳 docker-compose.dev.yml      # Solo DB para desarrollo
-├── 🐳 Dockerfile                  # Imagen de la aplicación
-├── 🔧 .env                        # Variables de entorno
-├── 📝 .dockerignore               # Archivos excluidos
-└── 📋 package.json                # Scripts Docker añadidos
-```
+* Puedes ajustar las variables de entorno (`DB_HOST`, `DB_PORT`, `DB_USERNAME`, `DB_PASSWORD`, `DB_DATABASE`) en un archivo `.env` y adaptar el `docker-compose.yml` si es necesario.
 
-## 🌍 Variables de Entorno
-
-El archivo `.env` contiene:
-
-```env
-# Database Configuration
-DB_HOST=localhost
-DB_PORT=1433
-DB_USERNAME=sa
-DB_PASSWORD=TransferApp2024!
-DB_DATABASE=TransferenciaAutomotor
-
-# Application Configuration
-NODE_ENV=development
-PORT=3000
-```
-
-## 🔄 Flujos de Trabajo
-
-### Desarrollo Local (Solo DB en Docker)
-1. `npm run docker:db` - Iniciar base de datos
-2. `npm install` - Instalar dependencias
-3. `npm run start:dev` - Ejecutar app en modo desarrollo
-
-### Producción/Testing (Todo en Docker)
-1. `npm run docker:build` - Construir imágenes
-2. `npm run docker:up` - Iniciar servicios
-3. `npm run docker:logs` - Monitorear logs
-
-### Limpieza
-```bash
-# Detener y eliminar contenedores
-npm run docker:down
-
-# Eliminar también los volúmenes (¡CUIDADO! Borra datos)
-docker-compose down -v
-
-# Limpiar imágenes no utilizadas
-docker system prune
-```
-
-## 🐛 Troubleshooting
-
-### La aplicación no puede conectar a la DB
-- Verifica que el contenedor de DB esté corriendo: `docker ps`
-- Revisa los logs: `docker-compose logs db`
-- Asegúrate de que el puerto 1433 no esté ocupado
-
-### Errores de permisos en Windows
-- Ejecuta PowerShell como administrador
-- Verifica que Docker Desktop esté corriendo
-
-### La aplicación no refleja cambios
-- En desarrollo: usa `npm run start:dev` fuera de Docker
-- En Docker: reconstruye con `npm run docker:build`
-
-## 📊 Monitoreo
-
-### Ver logs en tiempo real
-```bash
-# Logs de la aplicación
-docker-compose logs -f app
-
-# Logs de la base de datos
-docker-compose logs -f db
-
-# Logs de todos los servicios
-docker-compose logs -f
-```
-
-### Estado de los contenedores
-```bash
-# Ver contenedores corriendo
-docker ps
-
-# Ver uso de recursos
-docker stats
-```
-
-## 🔒 Seguridad
-
-⚠️ **Importante**: Las credenciales en este setup son para desarrollo local. En producción:
-
-1. Usa variables de entorno seguras
-2. No commitees credenciales al repositorio
-3. Implementa secretos de Docker/Kubernetes
-4. Cambia las contraseñas por defecto
+* Para entornos de CI/CD, integra estos pasos en tu pipeline antes de desplegar la aplicación.

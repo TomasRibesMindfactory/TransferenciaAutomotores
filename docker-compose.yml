@@ -12,9 +12,27 @@ services:
       - "1433:1433"
     volumes:
       - db_data:/var/opt/mssql
-    restart: unless-stopped
     networks:
       - transferencia-network
+
+  db-init:
+    image: mcr.microsoft.com/mssql-tools:latest
+    depends_on:
+      - db
+    entrypoint:
+      - /opt/mssql-tools/bin/sqlcmd
+      - -S
+      - db
+      - -U
+      - sa
+      - -P
+      - "TransferApp2024!"
+      - -Q
+      - "IF DB_ID('TransferenciaAutomotor') IS NULL CREATE DATABASE TransferenciaAutomotor;"
+    networks:
+      - transferencia-network
+    # se ejecuta una sola vez y sale
+    restart: "no"
 
   app:
     build: .
