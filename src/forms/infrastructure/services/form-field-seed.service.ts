@@ -996,6 +996,7 @@ export class FormFieldSeedService {
         type: 'radio',
         label: 'Origen RNPA',
         description: null,
+        defaultValue: 'N',
         required: true,
         orderIndex: 13,
         help: 'Determina si el vehículo es de origen nacional o importado',
