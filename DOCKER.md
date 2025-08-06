@@ -1,51 +1,143 @@
-# Instrucciones para Docker con NPM Scripts
+# 🐳 Instrucciones Docker - Configuración Simplificada
 
-Este documento resume los pasos y scripts necesarios para levantar y gestionar tu stack de Docker (SQL Server + NestJS) usando los comandos definidos en `package.json`.
+Este documento describe la configuración Docker simplificada usando **un solo archivo** `docker-compose.yml` con **profiles** para separar entornos.
 
-## Prerrequisitos
+## 🚀 Prerrequisitos
 
-* Docker y Docker Compose instalados.
-* Node.js y NPM instalados (para ejecutar los scripts).
+* Docker y Docker Compose instalados
+* Node.js y NPM instalados
 
-## Scripts NPM disponibles
+## 📊 Scripts NPM Disponibles
 
-| Script                   | Descripción                                                    |
-| ------------------------ | -------------------------------------------------------------- |
-| `npm run docker:db`      | Levanta el contenedor de base de datos (modo desarrollo).      |
-| `npm run db:init`        | Crea la base `TransferenciaAutomotor` si no existe.            |
-| `npm run migration:run`  | Ejecuta las migraciones de TypeORM.                            |
-| `npm run seed:run`       | Inserta datos de prueba (seeders).                             |
-| `npm run docker:build`   | Construye las imágenes Docker (`db` y `app`).                  |
-| `npm run docker:up`      | Levanta todos los servicios definidos en `docker-compose.yml`. |
-| `npm run docker:logs`    | Muestra los logs de la aplicación NestJS en tiempo real.       |
-| `npm run docker:down`    | Detiene y elimina todos los contenedores del proyecto.         |
-| `npm run docker:db:stop` | Detiene el contenedor de base de datos (desarrollo).           |
+### 🛠️ Desarrollo (DB en Docker, App Local)
 
-## Flujo de ejecución recomendado
+| Script | Descripción |
+|--------|-------------|
+| `npm run dev` | Levanta DB en Docker + App local con hot reload |
+| `npm run dev:db` | Solo levanta la base de datos en Docker |
+| `npm run dev:db:stop` | Detiene la base de datos |
+| `npm run dev:logs` | Muestra logs de la base de datos |
+
+### 🚀 Producción (Todo en Docker)
+
+| Script | Descripción |
+|--------|-------------|
+| `npm run prod` | Levanta toda la aplicación en Docker |
+| `npm run prod:stop` | Detiene toda la aplicación |
+| `npm run prod:logs` | Muestra logs de la aplicación |
+| `npm run prod:rebuild` | Reconstruye y reinicia la aplicación |
+
+### 🔧 Utilidades
+
+| Script | Descripción |
+|--------|-------------|
+| `npm run db:init` | Crea la base de datos si no existe |
+| `npm run db:clean` | Limpia volúmenes y cache Docker |
+| `npm run seed:run` | Ejecuta seeders de datos de prueba |
+| `npm run migration:run` | Ejecuta migraciones de TypeORM |
+## 🎯 Flujos de Trabajo Recomendados
+
+### 🛠️ Desarrollo Diario
 
 ```bash
-# 1. Levantar el contenedor de base de datos (dev)
-npm run docker:db
+# Opción 1: Todo en un comando
+npm run dev
 
-# 2. Crear la base de datos si no existe
+# Opción 2: Paso a paso
+npm run dev:db           # Levanta base de datos
+npm run db:init          # Crea DB (solo primera vez)
+npm run seed:run         # Carga datos (solo primera vez)
+npm run start:dev        # Inicia aplicación local
+
+# Ver logs de la base de datos
+npm run dev:logs
+
+# Al terminar
+npm run dev:db:stop
+```
+
+### 🚀 Producción / Testing
+
+```bash
+# Levantar toda la aplicación
+npm run prod
+
+# Verificar que esté funcionando
+npm run prod:logs
+
+# Para actualizaciones de código
+npm run prod:rebuild
+
+# Detener cuando no se necesite
+npm run prod:stop
+```
+
+### 🧹 Mantenimiento
+
+```bash
+# Limpiar todo (¡CUIDADO! Elimina datos)
+npm run db:clean
+
+# Recrear base de datos
 npm run db:init
 
-# 3. Ejecutar migraciones (TypeORM)
-npm run migration:run
-
-# 4. Sembrar datos de prueba
+# Recargar datos de prueba
 npm run seed:run
+```
 
-# 5. Construir imágenes Docker
-docker-compose build
-# o usando el script:
-npm run docker:build
+## 🔧 Configuración Técnica
 
-# 6. Levantar toda la infraestructura (DB + app)
-npm run docker:up
+### Docker Compose con Profiles
 
-# 7. Ver logs de la aplicación NestJS
-npm run docker:logs
+- **Perfil por defecto**: Solo base de datos (desarrollo)
+- **Perfil `prod`**: Base de datos + aplicación (producción)
+
+```bash
+# Equivalente a npm run dev:db
+docker-compose up db -d
+
+# Equivalente a npm run prod
+docker-compose --profile prod up --build -d
+```
+
+### Health Checks
+
+La base de datos incluye health checks para asegurar disponibilidad:
+- Intervalo: 10 segundos
+- Timeout: 5 segundos
+- Reintentos: 10
+- Período de inicio: 10 segundos
+
+## 📋 Variables de Entorno
+
+**Desarrollo (.env):**
+```env
+NODE_ENV=development
+DB_HOST=localhost
+DB_PORT=1433
+DB_USERNAME=sa
+DB_PASSWORD=TransferApp2024!
+DB_DATABASE=TransferenciaAutomotor
+```
+
+**Producción (Docker automático):**
+Las variables se configuran en docker-compose.yml
+
+## 🚨 Solución de Problemas
+
+```bash
+# Ver estado de contenedores
+docker ps -a
+
+# Conectarse manualmente a la DB
+docker exec -it transferencia-automotor-db /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "TransferApp2024!"
+
+# Limpiar todo y empezar de cero
+npm run db:clean
+docker system prune -f
+
+# Reconstruir solo la aplicación
+npm run prod:rebuild
 ```
 
 ## Detalles adicionales

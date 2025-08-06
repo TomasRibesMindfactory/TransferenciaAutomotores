@@ -1,6 +1,5 @@
-version: '3.8'
-
 services:
+  # Base de datos SQL Server
   db:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: transferencia-automotor-db
@@ -14,28 +13,19 @@ services:
       - db_data:/var/opt/mssql
     networks:
       - transferencia-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 5 bash -c '</dev/tcp/localhost/1433' || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
-  db-init:
-    image: mcr.microsoft.com/mssql-tools:latest
-    depends_on:
-      - db
-    entrypoint:
-      - /opt/mssql-tools/bin/sqlcmd
-      - -S
-      - db
-      - -U
-      - sa
-      - -P
-      - "TransferApp2024!"
-      - -Q
-      - "IF DB_ID('TransferenciaAutomotor') IS NULL CREATE DATABASE TransferenciaAutomotor;"
-    networks:
-      - transferencia-network
-    # se ejecuta una sola vez y sale
-    restart: "no"
-
+  # Aplicación NestJS (solo para producción)
   app:
-    build: .
+    build: 
+      context: .
+      dockerfile: Dockerfile
     container_name: transferencia-automotor-app
     environment:
       - NODE_ENV=production
@@ -47,13 +37,17 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     restart: unless-stopped
     networks:
       - transferencia-network
+    profiles:
+      - prod
 
 volumes:
   db_data:
+    driver: local
 
 networks:
   transferencia-network:

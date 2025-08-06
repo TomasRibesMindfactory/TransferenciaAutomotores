@@ -28,7 +28,7 @@ src/automotor/
 - **Aplicación**: Implementa los casos de uso y lógica de negocio
 - **Adaptadores**: Implementaciones concretas (repositorios, controladores)
 
-## � Docker Setup
+## 🐳 Docker Setup
 
 ### Prerrequisitos
 
@@ -37,67 +37,106 @@ src/automotor/
 
 ### 🚀 Inicio Rápido con Docker
 
-#### 1. Solo Base de Datos (Para desarrollo local)
+Este proyecto utiliza un **único archivo docker-compose.yml** con **profiles** para separar los entornos de desarrollo y producción.
+
+#### 1. 🛠️ Modo Desarrollo (Solo Base de Datos en Docker)
+
+En modo desarrollo, solo se ejecuta la base de datos en Docker mientras la aplicación NestJS se ejecuta localmente para facilitar el desarrollo y debug.
 
 ```bash
-# Iniciar solo la base de datos SQL Server
-docker-compose -f docker-compose.dev.yml up -d
+# Opción 1: Comando integrado que levanta DB y aplicación local
+npm run dev
 
-# La base de datos estará disponible en:
-# Host: localhost
-# Puerto: 1433
-# Usuario: sa
-# Contraseña: TransferApp2024!
-# Base de datos: TransferenciaAutomotor (se crea automáticamente)
+# Opción 2: Solo levantar la base de datos
+npm run dev:db
+
+# Luego ejecutar la aplicación localmente
+npm run start:dev
 ```
 
-#### 2. Aplicación Completa (Producción)
+**Configuración de desarrollo:**
+- Base de datos: SQL Server en Docker (puerto 1433)
+- Aplicación: Local con Node.js (puerto 3000)
+- Hot reload: ✅ Activado
+- Debug: ✅ Disponible
+
+#### 2. 🚀 Modo Producción (Todo en Docker)
+
+En modo producción, tanto la base de datos como la aplicación se ejecutan en contenedores Docker.
 
 ```bash
-# Construir e iniciar toda la aplicación
-docker-compose up --build
+# Levantar toda la aplicación en modo producción
+npm run prod
 
-# En modo separado (background)
-docker-compose up --build -d
+# Ver logs de la aplicación
+npm run prod:logs
 
-# Ver logs
-docker-compose logs -f app
+# Reconstruir solo la aplicación (para actualizaciones)
+npm run prod:rebuild
 ```
 
-### 🛠️ Comandos Docker Útiles
+**Configuración de producción:**
+- Base de datos: SQL Server en Docker
+- Aplicación: NestJS en Docker
+- Optimización: ✅ Build optimizado
+- Auto-restart: ✅ Activado
 
+### 🛠️ Comandos Docker Disponibles
+
+#### Desarrollo
 ```bash
-# Detener los contenedores
-docker-compose down
+npm run dev              # Levanta DB + aplicación local
+npm run dev:db           # Solo levanta la base de datos
+npm run dev:db:stop      # Detiene la base de datos
+npm run dev:logs         # Ver logs de la base de datos
+```
 
-# Eliminar volúmenes (¡CUIDADO! Esto elimina los datos)
-docker-compose down -v
+#### Producción
+```bash
+npm run prod             # Levanta aplicación completa
+npm run prod:stop        # Detiene aplicación completa
+npm run prod:logs        # Ver logs de la aplicación
+npm run prod:rebuild     # Reconstruye y reinicia la app
+```
 
-# Reconstruir la aplicación
-docker-compose build app
-
-# Conectarse a la base de datos desde un cliente externo
-# Servidor: localhost,1433
-# Usuario: sa
-# Contraseña: TransferApp2024!
+#### Utilidades
+```bash
+npm run db:init          # Crea la base de datos si no existe
+npm run db:clean         # Limpia volúmenes y cache Docker
 ```
 
 ### 📋 Variables de Entorno
 
-El archivo `.env` contiene las siguientes configuraciones:
-
+**Para desarrollo local (.env):**
 ```env
-# Database Configuration
+NODE_ENV=development
 DB_HOST=localhost
 DB_PORT=1433
 DB_USERNAME=sa
 DB_PASSWORD=TransferApp2024!
 DB_DATABASE=TransferenciaAutomotor
-
-# Application Configuration
-NODE_ENV=development
 PORT=3000
 ```
+
+**Para producción (Docker):**
+Las variables se configuran automáticamente en el docker-compose.yml
+
+### 🔧 Health Checks y Dependencias
+
+El archivo docker-compose.yml incluye:
+- **Health check** para SQL Server
+- **Dependencias** correctas entre servicios
+- **Profiles** para separar entornos
+- **Restart policies** para alta disponibilidad
+
+### 🎯 Ventajas de esta Configuración
+
+1. **Un solo archivo**: Simplicidad en la gestión
+2. **Profiles**: Separación clara de entornos
+3. **Health checks**: Mejor confiabilidad
+4. **Scripts simplificados**: Comandos fáciles de recordar
+5. **Desarrollo ágil**: Hot reload sin containers
+6. **Producción robusta**: Todo containerizado
 
 **Credenciales por defecto:**
 - Usuario: `sa`
